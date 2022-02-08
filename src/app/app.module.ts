@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
 import {SplitButtonModule} from 'primeng/splitbutton';
+import {ButtonModule} from 'primeng/button';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import {SplitButtonModule} from 'primeng/splitbutton';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    SplitButtonModule
+    SplitButtonModule,
+    ButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]
