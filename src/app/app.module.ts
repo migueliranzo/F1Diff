@@ -6,11 +6,13 @@ import { AppComponent } from './app.component';
 
 import {SplitButtonModule} from 'primeng/splitbutton';
 import {ButtonModule} from 'primeng/button';
+import { GlobeComponent } from './components/globe/globe.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    GlobeComponent
   ],
   imports: [
     BrowserModule,
