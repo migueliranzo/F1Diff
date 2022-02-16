@@ -1,7 +1,20 @@
 <div class="overflow-hidden">
 <p>globe works!</p>
-
-    <div id="globeViz"></div>
+    <div>
+        <div> 
+        <p-orderList [value]="circuitdata" (onSelectionChange)="test2($event.value)" filterBy="circuitName,Location.locality,Location.country" header="List of circuits" [listStyle]="{'max-height':'30rem'}">
+            <ng-template let-circuit  pTemplate="item">
+                <div >
+                    <div style="font-size:14px;margin:15px 5px 0 0">{{circuit.circuitName}} ({{circuit.Location.country}} , {{circuit.Location.locality}}) - {{circuit.timesraced}} times raced</div>
+                </div>
+            </ng-template>
+        </p-orderList></div>
+        <div>
+            <div id="globeViz"></div>
+        </div>
+       
+    </div>
+   
    
     <div id="globeViz1"></div>
     <div>ee</div>

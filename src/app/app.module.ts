@@ -7,18 +7,20 @@ import { AppComponent } from './app.component';
 import {SplitButtonModule} from 'primeng/splitbutton';
 import {ButtonModule} from 'primeng/button';
 import { GlobeComponent } from './components/globe/globe.component';
+import {OrderListModule} from 'primeng/orderlist';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    GlobeComponent
+    GlobeComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     SplitButtonModule,
-    ButtonModule
+    ButtonModule,
+    OrderListModule
   ],
   providers: [],
   bootstrap: [AppComponent]
