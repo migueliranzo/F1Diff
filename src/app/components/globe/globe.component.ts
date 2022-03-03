@@ -28,7 +28,7 @@ export class GlobeComponent implements OnInit {
 
   fetch('http://localhost:8000/api/f1/circuits.json?limit=90').then(response => response.json()).then(data => {
 
-    console.log(data.MRData.CircuitTable.Circuits);// @ts-ignore 
+   // console.log(data.MRData.CircuitTable.Circuits);// @ts-ignore 
     this.circuitdata = data.MRData.CircuitTable.Circuits;
     //console.log(data.MRData.RaceTable.Races[3].Circuit.Location.long);
     var itemsProcessed = 0;
@@ -48,11 +48,10 @@ export class GlobeComponent implements OnInit {
         if(itemsProcessed === this.circuitdata.length) {
     
           // @ts-ignore 
-          const colorScale = d3.scaleSequentialSqrt(d3.interpolateYlOrRd);
-          // @ts-ignore 
                 // GDP per capita (avoiding countries with small pop)// @ts-ignore 
-                const getVal = feat => feat.properties.GDP_MD_EST / Math.max(1e5, feat.properties.POP_EST);
-            
+           
+           
+
                 fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countries =>
                 {
                   
@@ -75,17 +74,21 @@ export class GlobeComponent implements OnInit {
                     .labelDotRadius(0.5)// .labelDotRadius(0.4)
                     .labelColor(() => 'rgba(59, 241, 253, 0.75)')
                     .labelResolution(2)
-                    .onLabelClick(test)
-                
+                    .onLabelClick(test) // @ts-ignore 
+                   
+
                     // Add auto-rotation
                   //  world.controls().autoRotate = true;
                     //world.controls().autoRotateSpeed = 0.6;  
                    // world.pointOfView({lat: 23, lng: 33, altitude: 2.7});
                     this.word2 = world;
 
+                  
+
+
                 });
  
- 
+            
                    
           }
 
@@ -95,7 +98,8 @@ export class GlobeComponent implements OnInit {
   
   });
 
- 
+  
+
 
   }
 
@@ -103,24 +107,21 @@ export class GlobeComponent implements OnInit {
     console.log(clickedPlace);
     
     let lat =  clickedPlace[0].Location.lat;
-    console.log(lat);
     let long = clickedPlace[0].Location.long;
 
-    console.log(parseInt(lat) + 3);
-    
 
     const map1 = clickedPlace.map((x: { Location: { lat: any; long: any; }; circuitName: any; }) => ({
       lat: x.Location.lat,
       lng: x.Location.long,
+      name: x.circuitName,
       size: 0.1,
       color: 'red'
     }));
 
-    
-
+  
     this.word2.pointsData(map1);
     this.word2.pointOfView({lat: parseInt(lat) - 9, lng: long, altitude: 1}, 444);
- 
+    
     
   }
   
