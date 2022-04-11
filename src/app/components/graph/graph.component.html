@@ -2,8 +2,11 @@
 
 <div class="my-4">
     <p-dropdown [options]="eras" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
-    <p-dropdown [options]="rounds"  optionLabel="raceName" optionValue="round" (onChange)="getRaceData($event.value)"></p-dropdown>
-    <button class="bg-red-300 px-8 py-3 rounded-md">Search</button>
+    <p-dropdown [options]="rounds" [(ngModel)]="selectedRound" optionLabel="raceName" optionValue="round"></p-dropdown>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2" (click)="getLapTimes()">Search</button>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateView(selectedLap-1)" ><<</button>
+    <label class="mx-4 text-white text-2xl">{{selectedLap}}</label>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateView(selectedLap+1)">>></button>
 </div>
 
 <ngx-charts-bar-horizontal
