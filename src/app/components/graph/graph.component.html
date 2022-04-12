@@ -4,9 +4,11 @@
     <p-dropdown [options]="eras" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
     <p-dropdown [options]="rounds" [(ngModel)]="selectedRound" optionLabel="raceName" optionValue="round"></p-dropdown>
     <button class="bg-red-300 px-8 py-3 rounded-md mx-2" (click)="getLapTimes()">Search</button>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateView(selectedLap-1)" ><<</button>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateTimesFromMap(increasingLapTimes,selectedLap-1)" ><<</button>
     <label class="mx-4 text-white text-2xl">{{selectedLap}}</label>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateView(selectedLap+1)">>></button>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateTimesFromMap(increasingLapTimes,selectedLap+1)">>></button>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="playTimesFromMap(increasingLapTimes,selectedLap)">Play</button>
+    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="pauseTimesFromMap()">Pause</button>
 </div>
 
 <ngx-charts-bar-horizontal
@@ -23,4 +25,13 @@
   (select)="onSelect($event)"
   (activate)="onActivate($event)"
   (deactivate)="onDeactivate($event)">
+
+  <!-- <ng-template #tooltipTemplate let-model="model">
+    Custommm
+    <pre>{{model.name}}</pre>
+  </ng-template> -->
+  
+  
+  
+
 </ngx-charts-bar-horizontal>

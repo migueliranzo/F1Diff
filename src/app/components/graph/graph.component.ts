@@ -9,6 +9,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 export class GraphComponent implements OnInit {
 
+  interval;
+  increasingLapTimes;
   selectedLap;
   lapTimes;
   selectedEra;
@@ -122,12 +124,7 @@ export class GraphComponent implements OnInit {
      
      this.selectedLap = 0;
 
-      let cleanResults =  this.updateTimes(this.lapTimes, this.selectedLap);
-
-
-        console.log(cleanResults);
-          
-        this.single = cleanResults;
+     this.updateTimes(this.lapTimes, this.selectedLap);
 
 
         let laplapTimes = [];
@@ -136,28 +133,21 @@ export class GraphComponent implements OnInit {
         for (let i = 0; i < this.lapTimes.length; i++) {
 
           const lapMap = new Map();
-          //let lapTimes = [];
-         
+  
             this.lapTimes[i].Timings.forEach(element => {
               
-
-              //Time conversion is really messed up
-              var timeParts = element.time.split(":");
-              let test = (+timeParts[0] * (60000 * 60)) + (+timeParts[1] * 60000);
+              let msTime = this.laptimeToMS(element.time);
 
               if(i !== 0){
 
                let value = laplapTimes[i-1].get(element.driverId);
 
-               lapMap.set(element.driverId,test + value);
+               lapMap.set(element.driverId,msTime + value);
 
               }else{
 
-                lapMap.set(element.driverId,test);
+                lapMap.set(element.driverId,msTime);
               }
-
-
-           
 
             });
 
@@ -165,8 +155,9 @@ export class GraphComponent implements OnInit {
           
         }
 
-       console.log(laplapTimes);
-        
+      this.increasingLapTimes = laplapTimes;
+      console.log(laplapTimes);
+      this.updateTimesFromMap(this.increasingLapTimes, 1);
 
      }));
 
@@ -176,24 +167,172 @@ export class GraphComponent implements OnInit {
 
     let cleanResults = [];
 
+    let slowest = 9999999;
+
     times[lap].Timings.forEach(element => {
-         
-      // console.log(element);
-      var timeParts = element.time.split(":");
-      let test = (+timeParts[0] * (60000 * 60)) + (+timeParts[1] * 60000);
+
+        if(this.laptimeToMS(element.time) < slowest){
+
+          slowest = this.laptimeToMS(element.time);
+        }
+
+    });    
+
+    times[lap].Timings.forEach(element => {
+
+    let msTime = this.laptimeToMS(element.time) - slowest;
      
-     cleanResults.push({"name": element.driverId, "value": test});
+     cleanResults.push({"name": element.driverId, "value": msTime});
          
-     
      });
 
-     return cleanResults;
+     this.updateView(lap, cleanResults);
 
   }
 
-  updateView(lap){
+  updateTimesFromMap(times, lap){
+
+    let cleanResults = [];
+
+    let slowest = 99999999;
+    let fastest = 999999999;
+
+    for (const [key, value] of times[lap].entries()) {
+
+      if(value < fastest){
+      
+        
+        fastest = value;
+        console.log(fastest);
+      }
+
+    }
+
+    for (const [key, value] of times[lap].entries()) {
+
+      if(((100 * fastest) / value) < slowest){
+
+        slowest = (100 * fastest) / value;
+      }
+
+    }
+
+    
+   
+    const mapSort2 = new Map([...times[lap].entries()].sort((a, b) => b[1] - a[1]));
+   
+    const reversed:any = new Map(Array.from(mapSort2).reverse());
+
+    console.log(reversed); 
+
+
+      for (const [key, value] of reversed.entries()) {
+
+          
+        if(value == fastest){
+
+          cleanResults.push({"name": key, "value": 100 - slowest});
+        }else{
+    
+          cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest}); 
+        }
+
+      }
+
+      this.updateView(lap, cleanResults);
+
+  }
+
+  //TODO refactor repeated code, here and there
+  playTimesFromMap(times, lap){
+
+    console.log(times);
+    
+    let totalResults = [];
+
+    times.forEach(element => {
+      let cleanResults = [];
+      
+      let slowest = 99999999;
+      let fastest = 999999999;
+
+    for (const [key, value] of element.entries()) {
+
+      if(value < fastest){
+      
+        
+        fastest = value;
+        console.log(fastest);
+      }
+
+    }
+
+    for (const [key, value] of element.entries()) {
+
+      if(((100 * fastest) / value) < slowest){
+
+        slowest = (100 * fastest) / value;
+      }
+
+    }
+
+    const mapSort2 = new Map([...element.entries()].sort((a, b) => b[1] - a[1]));
+   
+    const reversed:any = new Map(Array.from(mapSort2).reverse());
+
+    console.log(reversed); 
+
+      for (const [key, value] of reversed.entries()) {
+        
+          
+        if(value == fastest){
+
+          cleanResults.push({"name": key, "value": 100 - slowest});
+        }else{
+    
+          cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest}); 
+        }
+      
+      }
+
+      totalResults.push(cleanResults);
+
+    });
+    
+    
+
+      console.log(totalResults);
+      
+
+     this.interval = setInterval(()=> { 
+
+        this.updateView(this.selectedLap, totalResults[this.selectedLap]);
+        this.selectedLap++;
+
+      }, 1 * 1000);
+
+  }
+
+  pauseTimesFromMap(){
+    clearInterval(this.interval);
+  }
+
+  updateView(lap,times){
     this.selectedLap = lap;
-    this.single = this.updateTimes(this.lapTimes, lap);
+    this.single = times;
+  }
+
+
+  laptimeToMS(time){
+
+    var timeParts = time.split(":");
+  
+    let mins = timeParts[0] * 60000;
+    let seconds = timeParts[1] * 1000;
+    let ms = parseInt(timeParts[1].split(".")[1]);
+        
+    return mins + seconds + ms;
+    
   }
 
 }
