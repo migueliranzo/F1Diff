@@ -11,6 +11,7 @@ export class GraphComponent implements OnInit {
 
   interval;
   increasingLapTimes;
+  increasingPositions;
   selectedLap;
   lapTimes;
   selectedEra;
@@ -33,9 +34,31 @@ export class GraphComponent implements OnInit {
 
 
   constructor() {
-  //  Object.assign(this, this.single);
+   Object.assign(this, this.single);
   }
-  
+
+  testDif = [ {name: 'hamilton', value: 3.812524877272125, extra: {dif: 0}},
+  {name: 'rosberg', value: 3.744292307592204, extra: { dif: 198000}},
+  {name: 'massa', value: 3.4428441906830187,  extra: {dif: 878000}},
+  {name: 'vettel', value: 3.0609385372511753,  extra: {dif: 1120000}},
+  {name: 'sainz', value: 2.4713801071243324,  extra: {dif: 1746000}},
+  {name: 'nasr', value: 1.9551702538534812,  extra: {dif: 1546000}},
+  {name: 'ricciardo', value: 1.9033816915331982,  extra: {dif: 156000}},
+  {name: 'raikkonen', value: 1.2737065671289542,  extra: {dif: 1910000}},
+  {name: 'max_verstappen', value: 1.0247460491046922,  extra: {dif: 762000}},
+  {name: 'hulkenberg', value: 0.8731203895090403,  extra: {dif: 466000}},
+   {name: 'perez', value: 0.4912825285983615,  extra: {dif: 1180000}},
+   {name: 'button', value: 0.2405262605819587,  extra: {dif: 780000}},
+   {name: 'ericsson', value: 0,  extra: {dif: 752000}}];
+
+  customColors = [
+    {name: 'perez', value: '#0000ff'}, {name:'alonso',value:'#1da8ba'}, {name:'ocon',value:'#1da8ba'}, {name:'max_verstappen',value:"#0000ff"},
+    {name: 'hamilton',value:'#000000'},   {name: 'bottas',value:'#000000'},    {name: 'sainz',value:'#ff0000'},    {name: 'norris',value:'#ff9800'},
+    {name: 'gasly',value:'#ffffff'},   {name: 'tsunoda',value:'#ffffff'},    {name: 'leclerc',value:'#ff0000'},    {name: 'ricciardo',value:'#ff9800'},
+    {name: 'vettel',value:'#009688'},   {name: 'stroll',value:'#009688'},    {name: 'rusell',value:'#00bcd4'},    {name: 'latifi',value:'#00bcd4'},
+    {name: 'mick_schumacher',value:'#c0b7b7'},   {name: 'mazepin',value:'#c0b7b7'},    {name: 'raikkonen',value:'#eabcbc'},    {name: 'giovinazzi',value:'#eabcbc'}
+];
+
 
   onSelect(data: any): void {
     console.log('Item clicked', JSON.parse(JSON.stringify(data)));
@@ -51,6 +74,9 @@ export class GraphComponent implements OnInit {
 
   ngOnInit(): void {
 
+    this.single = this.testDif;
+
+    /*
     fetch('http://localhost:8000/api/f1/2020/3/results.json').then(response => response.json()).then(data => {
 
           let results =  data.MRData.RaceTable.Races[0].Results
@@ -72,6 +98,7 @@ export class GraphComponent implements OnInit {
     });
 
     Object.assign(this, this.single);
+    */
   }
 
   getYearEras(era){
@@ -128,15 +155,20 @@ export class GraphComponent implements OnInit {
 
 
         let laplapTimes = [];
-        
+        let poslapTimes = [];
 
         for (let i = 0; i < this.lapTimes.length; i++) {
 
           const lapMap = new Map();
+          const posMap = new Map();
   
             this.lapTimes[i].Timings.forEach(element => {
               
               let msTime = this.laptimeToMS(element.time);
+              let pos = element.position;
+
+              posMap.set(element.driverId, pos);
+              posMap.set(pos,element.driverId);
 
               if(i !== 0){
 
@@ -151,11 +183,15 @@ export class GraphComponent implements OnInit {
 
             });
 
+            poslapTimes.push(posMap);
             laplapTimes.push(lapMap);
           
         }
 
+      this.increasingPositions = poslapTimes;
       this.increasingLapTimes = laplapTimes;
+
+      console.log(poslapTimes);     
       console.log(laplapTimes);
       this.updateTimesFromMap(this.increasingLapTimes, 1);
 
@@ -231,15 +267,35 @@ export class GraphComponent implements OnInit {
           
         if(value == fastest){
 
-          cleanResults.push({"name": key, "value": 100 - slowest});
+          cleanResults.push({"name": key, "value": 100 - slowest, extra: { "dif": 0 }});
         }else{
     
-          cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest}); 
+          let curDriver = this.increasingPositions[lap].get(key);
+          let wtf = parseInt(curDriver)-1;
+          let driverInfront = this.increasingPositions[lap].get(wtf.toString());
+
+          let timeInFront = this.increasingLapTimes[lap].get(driverInfront);
+
+          let unformatedDif = (value - timeInFront);
+
+          let dif = this.millisToMinutesAndSeconds(unformatedDif); 
+
+        
+          
+
+          console.log(curDriver + " time: " + value);
+          console.log(driverInfront + " time: " + timeInFront );
+          
+          
+
+
+          cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest, extra: { "dif":dif} }); 
         }
 
       }
 
       this.updateView(lap, cleanResults);
+      
 
   }
 
@@ -318,8 +374,15 @@ export class GraphComponent implements OnInit {
   }
 
   updateView(lap,times){
+    
+    
+
     this.selectedLap = lap;
     this.single = times;
+    console.log(this.single);
+
+    Object.assign(this, this.single);
+    
   }
 
 
@@ -333,6 +396,12 @@ export class GraphComponent implements OnInit {
         
     return mins + seconds + ms;
     
+  }
+
+  millisToMinutesAndSeconds(millis) {
+    var minutes:any = Math.floor(millis / 60000);
+    var seconds:any = ((millis % 60000) / 1000).toFixed(0);
+    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
   }
 
 }
