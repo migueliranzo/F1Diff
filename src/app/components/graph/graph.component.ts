@@ -9,6 +9,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 export class GraphComponent implements OnInit {
 
+  totalLaps;
   interval;
   increasingLapTimes;
   increasingPositions;
@@ -148,6 +149,7 @@ export class GraphComponent implements OnInit {
      this.lapTimes = data.MRData.RaceTable.Races[0].Laps;
       
      console.log(this.lapTimes);
+     this.totalLaps = this.lapTimes.length - 1;
      
      this.selectedLap = 0;
 
@@ -159,6 +161,8 @@ export class GraphComponent implements OnInit {
 
         for (let i = 0; i < this.lapTimes.length; i++) {
 
+
+          //TODO mejor uso de funcion que haga loop de los contenidos 
           const lapMap = new Map();
           const posMap = new Map();
   
@@ -361,9 +365,15 @@ export class GraphComponent implements OnInit {
       
 
      this.interval = setInterval(()=> { 
-
-        this.updateView(this.selectedLap, totalResults[this.selectedLap]);
-        this.selectedLap++;
+        console.log(this.selectedLap);
+        console.log(this.totalLaps);
+        
+        if(this.selectedLap < this.totalLaps){
+          this.updateView(this.selectedLap, totalResults[this.selectedLap]);
+          this.selectedLap++;
+        }else{
+          this.pauseTimesFromMap();
+        }
 
       }, 1 * 1000);
 
