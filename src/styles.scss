@@ -2,3 +2,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.chart-legend .legend-label .active .legend-label-text, .legend-title-text{
+
+    color: #afb7c8 !important;
+}

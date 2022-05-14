@@ -11,10 +11,7 @@ export class GraphComponent implements OnInit {
 
   totalLaps;
   interval;
-  increasingLapTimes;
-  increasingPositions;
   selectedLap;
-  lapTimes;
   selectedEra;
   selectedRound;
   single = [];
@@ -32,6 +29,8 @@ export class GraphComponent implements OnInit {
   yAxisLabel: string = 'Driver';
   showYAxisLabel: boolean = true;
   xAxisLabel: string = 'Time';
+  positions: any[];
+  lapTimes: any[];
 
 
   constructor() {
@@ -76,30 +75,6 @@ export class GraphComponent implements OnInit {
   ngOnInit(): void {
 
     this.single = this.testDif;
-
-    /*
-    fetch('http://localhost:8000/api/f1/2020/3/results.json').then(response => response.json()).then(data => {
-
-          let results =  data.MRData.RaceTable.Races[0].Results
-
-          console.log(results);
-          
-          let cleanResults = [];
-
-          results.forEach(element => {
-         
-          
-              cleanResults.push({"name": element.Driver.givenName, "value": element.position});
-            
-          
-          });
-
-          this.single = cleanResults;
-
-    });
-
-    Object.assign(this, this.single);
-    */
   }
 
   getYearEras(era){
@@ -109,10 +84,7 @@ export class GraphComponent implements OnInit {
     fetch('http://localhost:8000/api/f1/' + era + '.json').then(response => response.json().then(data=> {
 
          this.rounds = data.MRData.RaceTable.Races;
-
-    }));
-    
-    
+    }));    
   }
 
   getRaceData(race){
@@ -146,27 +118,24 @@ export class GraphComponent implements OnInit {
     
     fetch('http://localhost:8000/api/f1/' + this.selectedEra + '/' + this.selectedRound + '/laps.json?limit=9999').then(response => response.json().then(data=> {
 
-     this.lapTimes = data.MRData.RaceTable.Races[0].Laps;
+     let lapTimes = data.MRData.RaceTable.Races[0].Laps;
       
-     console.log(this.lapTimes);
-     this.totalLaps = this.lapTimes.length - 1;
+     console.log(lapTimes);
+     this.totalLaps = lapTimes.length - 1;
      
      this.selectedLap = 0;
-
-     this.updateTimes(this.lapTimes, this.selectedLap);
-
 
         let laplapTimes = [];
         let poslapTimes = [];
 
-        for (let i = 0; i < this.lapTimes.length; i++) {
+        for (let i = 0; i < lapTimes.length; i++) {
 
 
           //TODO mejor uso de funcion que haga loop de los contenidos 
           const lapMap = new Map();
           const posMap = new Map();
   
-            this.lapTimes[i].Timings.forEach(element => {
+            lapTimes[i].Timings.forEach(element => {
               
               let msTime = this.laptimeToMS(element.time);
               let pos = element.position;
@@ -192,61 +161,37 @@ export class GraphComponent implements OnInit {
           
         }
 
-      this.increasingPositions = poslapTimes;
-      this.increasingLapTimes = laplapTimes;
+      this.positions = poslapTimes;
+      this.lapTimes = laplapTimes;
 
       console.log(poslapTimes);     
       console.log(laplapTimes);
-      this.updateTimesFromMap(this.increasingLapTimes, 1);
+      this.updateChartTimes(this.lapTimes, this.selectedLap);
 
      }));
 
   }
 
-  updateTimes(times, lap){
+ 
+  getFastestTime(times, lap){
 
-    let cleanResults = [];
-
-    let slowest = 9999999;
-
-    times[lap].Timings.forEach(element => {
-
-        if(this.laptimeToMS(element.time) < slowest){
-
-          slowest = this.laptimeToMS(element.time);
-        }
-
-    });    
-
-    times[lap].Timings.forEach(element => {
-
-    let msTime = this.laptimeToMS(element.time) - slowest;
-     
-     cleanResults.push({"name": element.driverId, "value": msTime});
-         
-     });
-
-     this.updateView(lap, cleanResults);
-
-  }
-
-  updateTimesFromMap(times, lap){
-
-    let cleanResults = [];
-
-    let slowest = 99999999;
     let fastest = 999999999;
 
     for (const [key, value] of times[lap].entries()) {
 
       if(value < fastest){
       
-        
         fastest = value;
         console.log(fastest);
       }
-
     }
+    return fastest;
+  }
+
+
+  getSlowestTime(times, lap, fastest){
+
+    let slowest = 99999999;
 
     for (const [key, value] of times[lap].entries()) {
 
@@ -254,139 +199,90 @@ export class GraphComponent implements OnInit {
 
         slowest = (100 * fastest) / value;
       }
+    }
+    return slowest;
+  }
+   
+   
+  formatLaps(times, lap){
 
+    let cleanResults = [];
+
+    let fastest = this.getFastestTime(times,lap);
+    let slowest = this.getSlowestTime(times, lap, fastest);
+
+    const shortedTimes = new Map([...times[lap].entries()].sort((a, b) => b[1] - a[1]));   
+    const reversedTimes:any = new Map(Array.from(shortedTimes).reverse());
+    
+    for (const [key, value] of reversedTimes.entries()) {
+          
+      if(value == fastest){
+
+        cleanResults.push({"name": key, "value": 100 - slowest, extra: { "dif": 0 }});
+      }else{
+
+        let curDriver = this.positions[lap].get(key);
+        let wtf = parseInt(curDriver)-1;
+        let driverInfront = this.positions[lap].get(wtf.toString());
+
+        let timeInFront = this.lapTimes[lap].get(driverInfront);
+
+        let unformatedDif = (value - timeInFront);
+
+        let dif = this.millisToMinutesAndSeconds(unformatedDif); 
+    
+        cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest, extra: { "dif":dif} }); 
+      }
     }
 
-    
-   
-    const mapSort2 = new Map([...times[lap].entries()].sort((a, b) => b[1] - a[1]));
-   
-    const reversed:any = new Map(Array.from(mapSort2).reverse());
-
-    console.log(reversed); 
-
-
-      for (const [key, value] of reversed.entries()) {
-
-          
-        if(value == fastest){
-
-          cleanResults.push({"name": key, "value": 100 - slowest, extra: { "dif": 0 }});
-        }else{
-    
-          let curDriver = this.increasingPositions[lap].get(key);
-          let wtf = parseInt(curDriver)-1;
-          let driverInfront = this.increasingPositions[lap].get(wtf.toString());
-
-          let timeInFront = this.increasingLapTimes[lap].get(driverInfront);
-
-          let unformatedDif = (value - timeInFront);
-
-          let dif = this.millisToMinutesAndSeconds(unformatedDif); 
-
-        
-          
-
-          console.log(curDriver + " time: " + value);
-          console.log(driverInfront + " time: " + timeInFront );
-          
-          
-
-
-          cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest, extra: { "dif":dif} }); 
-        }
-
-      }
-
-      this.updateView(lap, cleanResults);
-      
-
+    return cleanResults;
   }
 
-  //TODO refactor repeated code, here and there
-  playTimesFromMap(times, lap){
 
-    console.log(times);
-    
-    let totalResults = [];
+  updateChartTimes(times, lap){
+    this.updateView(this.formatLaps(times, lap), lap);
+  }
 
-    times.forEach(element => {
-      let cleanResults = [];
-      
-      let slowest = 99999999;
-      let fastest = 999999999;
 
-    for (const [key, value] of element.entries()) {
+  playUpdateChartTimes(times){
+  
+  let totalResults = [];
 
-      if(value < fastest){
-      
-        
-        fastest = value;
-        console.log(fastest);
-      }
+   for (let i = 0; i < times.length; i++)  {
 
-    }
-
-    for (const [key, value] of element.entries()) {
-
-      if(((100 * fastest) / value) < slowest){
-
-        slowest = (100 * fastest) / value;
-      }
-
-    }
-
-    const mapSort2 = new Map([...element.entries()].sort((a, b) => b[1] - a[1]));
-   
-    const reversed:any = new Map(Array.from(mapSort2).reverse());
-
-    console.log(reversed); 
-
-      for (const [key, value] of reversed.entries()) {
-        
-          
-        if(value == fastest){
-
-          cleanResults.push({"name": key, "value": 100 - slowest});
-        }else{
-    
-          cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest}); 
-        }
-      
-      }
-
+      let cleanResults = this.formatLaps(times, i);
       totalResults.push(cleanResults);
+    }
 
-    });
+    console.log(totalResults);
     
-    
-
-      console.log(totalResults);
-      
-
-     this.interval = setInterval(()=> { 
-        console.log(this.selectedLap);
-        console.log(this.totalLaps);
-        
-        if(this.selectedLap < this.totalLaps){
-          this.updateView(this.selectedLap, totalResults[this.selectedLap]);
-          this.selectedLap++;
-        }else{
-          this.pauseTimesFromMap();
-        }
-
-      }, 1 * 1000);
-
+   this.setPlayInterval(totalResults);
   }
+
+
+  setPlayInterval(totalResults){
+
+    this.interval = setInterval(()=> { 
+      console.log(this.selectedLap);
+      console.log(this.totalLaps);
+      
+      if(this.selectedLap < this.totalLaps){
+        this.updateView(totalResults[this.selectedLap+1], this.selectedLap+1);
+      
+      }else{
+        this.pauseTimesFromMap();
+      }
+
+    }, 1 * 1000);
+  }
+
 
   pauseTimesFromMap(){
     clearInterval(this.interval);
   }
 
-  updateView(lap,times){
-    
-    
 
+  updateView(times, lap){
     this.selectedLap = lap;
     this.single = times;
     console.log(this.single);
@@ -397,22 +293,22 @@ export class GraphComponent implements OnInit {
 
 
   laptimeToMS(time){
+    let timeParts = time.split(":");
 
-    var timeParts = time.split(":");
-  
     let mins = timeParts[0] * 60000;
     let seconds = timeParts[1] * 1000;
     let ms = parseInt(timeParts[1].split(".")[1]);
         
     return mins + seconds + ms;
-    
   }
+
 
   millisToMinutesAndSeconds(millis) {
-    var minutes:any = Math.floor(millis / 60000);
-    var seconds:any = ((millis % 60000) / 1000).toFixed(0);
+    console.log(millis);
+    
+    let minutes:any = Math.floor(millis / 60000);
+    let seconds:any = ((millis % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
   }
-
 }
  
