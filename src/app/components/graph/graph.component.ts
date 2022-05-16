@@ -9,6 +9,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 export class GraphComponent implements OnInit {
 
+  
   totalLaps;
   interval;
   selectedLap;
@@ -61,19 +62,19 @@ export class GraphComponent implements OnInit {
 
 
   onSelect(data: any): void {
-    console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+    //console.log('Item clicked', JSON.parse(JSON.stringify(data)));
   }
 
   onActivate(data: any): void {
-    console.log('Activate', JSON.parse(JSON.stringify(data)));
+    //console.log('Activate', JSON.parse(JSON.stringify(data)));
   }
 
   onDeactivate(data: any): void {
-    console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+    //console.log('Deactivate', JSON.parse(JSON.stringify(data)));
   }
 
   ngOnInit(): void {
-
+    
     this.single = this.testDif;
   }
 
@@ -130,19 +131,19 @@ export class GraphComponent implements OnInit {
 
         for (let i = 0; i < lapTimes.length; i++) {
 
-
-          //TODO mejor uso de funcion que haga loop de los contenidos 
           const lapMap = new Map();
           const posMap = new Map();
-  
+
             lapTimes[i].Timings.forEach(element => {
-              
+             
               let msTime = this.laptimeToMS(element.time);
               let pos = element.position;
 
               posMap.set(element.driverId, pos);
               posMap.set(pos,element.driverId);
 
+              
+              
               if(i !== 0){
 
                let value = laplapTimes[i-1].get(element.driverId);
@@ -155,6 +156,10 @@ export class GraphComponent implements OnInit {
               }
 
             });
+
+            console.log("Lap " + (i+1) + " " + lapMap.get("hamilton")/1000);
+           
+            
 
             poslapTimes.push(posMap);
             laplapTimes.push(lapMap);
@@ -182,7 +187,7 @@ export class GraphComponent implements OnInit {
       if(value < fastest){
       
         fastest = value;
-        console.log(fastest);
+       
       }
     }
     return fastest;
@@ -222,14 +227,15 @@ export class GraphComponent implements OnInit {
       }else{
 
         let curDriver = this.positions[lap].get(key);
-        let wtf = parseInt(curDriver)-1;
-        let driverInfront = this.positions[lap].get(wtf.toString());
+        let aux = parseInt(curDriver)-1;
+        let driverInfront = this.positions[lap].get(aux.toString());
 
         let timeInFront = this.lapTimes[lap].get(driverInfront);
 
-        let unformatedDif = (value - timeInFront);
+        let dif = (value - timeInFront)/1000;
 
-        let dif = this.millisToMinutesAndSeconds(unformatedDif); 
+        console.log(dif);
+        
     
         cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest, extra: { "dif":dif} }); 
       }
@@ -293,22 +299,22 @@ export class GraphComponent implements OnInit {
 
 
   laptimeToMS(time){
+
     let timeParts = time.split(":");
 
-    let mins = timeParts[0] * 60000;
-    let seconds = timeParts[1] * 1000;
+    let mins = parseInt(timeParts[0]) * 60000;
+    let seconds = parseInt(timeParts[1].split(".")[0]) * 1000;
     let ms = parseInt(timeParts[1].split(".")[1]);
-        
+
+    let stuff = mins + seconds + ms;
+
+    console.log("Entra: " + time + " Sale: " +  stuff);
+
+    
     return mins + seconds + ms;
   }
 
+  
 
-  millisToMinutesAndSeconds(millis) {
-    console.log(millis);
-    
-    let minutes:any = Math.floor(millis / 60000);
-    let seconds:any = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-  }
+
 }
- 
