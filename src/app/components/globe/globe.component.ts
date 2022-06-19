@@ -47,11 +47,6 @@ export class GlobeComponent implements OnInit {
         itemsProcessed++;
         if(itemsProcessed === this.circuitdata.length) {
     
-          // @ts-ignore 
-                // GDP per capita (avoiding countries with small pop)// @ts-ignore 
-           
-           
-
                 fetch('https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson').then(res => res.json()).then(countries =>
                 {
                   
@@ -78,10 +73,10 @@ export class GlobeComponent implements OnInit {
                    
 
                     // Add auto-rotation
-                  //  world.controls().autoRotate = true;
-                    //world.controls().autoRotateSpeed = 0.6;  
-                   // world.pointOfView({lat: 23, lng: 33, altitude: 2.7});
-                    this.word2 = world;
+                  world.controls().autoRotate = true;
+                  world.controls().autoRotateSpeed = 0.6;  
+                  world.pointOfView({lat: 23, lng: 33, altitude: 2.7});
+                  this.word2 = world;
 
                   
 

@@ -32,6 +32,7 @@ export class GraphComponent implements OnInit {
   xAxisLabel: string = 'Time';
   positions: any[];
   lapTimes: any[];
+  totalResults: any[] = [];
 
 
   constructor() {
@@ -74,7 +75,7 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+    console.log(this.laptimeToMS("1:27.347")); 
     this.single = this.testDif;
   }
 
@@ -117,6 +118,9 @@ export class GraphComponent implements OnInit {
 
   getLapTimes(){
     
+    this.lapTimes = [];
+    this.totalResults = [];
+
     fetch('http://localhost:8000/api/f1/' + this.selectedEra + '/' + this.selectedRound + '/laps.json?limit=9999').then(response => response.json().then(data=> {
 
      let lapTimes = data.MRData.RaceTable.Races[0].Laps;
@@ -143,7 +147,6 @@ export class GraphComponent implements OnInit {
               posMap.set(pos,element.driverId);
 
               
-              
               if(i !== 0){
 
                let value = laplapTimes[i-1].get(element.driverId);
@@ -157,10 +160,6 @@ export class GraphComponent implements OnInit {
 
             });
 
-            console.log("Lap " + (i+1) + " " + lapMap.get("hamilton")/1000);
-           
-            
-
             poslapTimes.push(posMap);
             laplapTimes.push(lapMap);
           
@@ -169,9 +168,13 @@ export class GraphComponent implements OnInit {
       this.positions = poslapTimes;
       this.lapTimes = laplapTimes;
 
+      this.msTimesToGraph();
+
+      console.log(this.totalResults);
       console.log(poslapTimes);     
       console.log(laplapTimes);
-      this.updateChartTimes(this.lapTimes, this.selectedLap);
+
+     this.updateChartTimes(this.totalResults, this.selectedLap);
 
      }));
 
@@ -208,7 +211,6 @@ export class GraphComponent implements OnInit {
     return slowest;
   }
    
-   
   formatLaps(times, lap){
 
     let cleanResults = [];
@@ -233,9 +235,6 @@ export class GraphComponent implements OnInit {
         let timeInFront = this.lapTimes[lap].get(driverInfront);
 
         let dif = (value - timeInFront)/1000;
-
-        console.log(dif);
-        
     
         cleanResults.push({"name": key, "value": ((100 * fastest) / value ) - slowest, extra: { "dif":dif} }); 
       }
@@ -245,26 +244,25 @@ export class GraphComponent implements OnInit {
   }
 
 
+
   updateChartTimes(times, lap){
-    this.updateView(this.formatLaps(times, lap), lap);
+    this.updateView(times[lap], lap);
   }
 
-
-  playUpdateChartTimes(times){
+  playUpdateChartTimes(){
   
-  let totalResults = [];
+   this.setPlayInterval(this.totalResults);
+  }
 
-   for (let i = 0; i < times.length; i++)  {
+  msTimesToGraph(){
 
-      let cleanResults = this.formatLaps(times, i);
-      totalResults.push(cleanResults);
+    for (let i = 0; i < this.lapTimes.length; i++)  {
+   
+      let cleanResults = this.formatLaps(this.lapTimes, i);
+      this.totalResults.push(cleanResults);
     }
 
-    console.log(totalResults);
-    
-   this.setPlayInterval(totalResults);
   }
-
 
   setPlayInterval(totalResults){
 
@@ -305,11 +303,6 @@ export class GraphComponent implements OnInit {
     let mins = parseInt(timeParts[0]) * 60000;
     let seconds = parseInt(timeParts[1].split(".")[0]) * 1000;
     let ms = parseInt(timeParts[1].split(".")[1]);
-
-    let stuff = mins + seconds + ms;
-
-    console.log("Entra: " + time + " Sale: " +  stuff);
-
     
     return mins + seconds + ms;
   }
