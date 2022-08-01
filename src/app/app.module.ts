@@ -11,6 +11,7 @@ import {OrderListModule} from 'primeng/orderlist';
 import { GraphComponent } from './components/graph/graph.component';
 import {FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BarComponent } from './components/bar/bar.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppComponent,
     GlobeComponent,
     GraphComponent,
+    BarComponent,
   ],
   imports: [
     BrowserModule,
