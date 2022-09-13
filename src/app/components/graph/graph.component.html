@@ -3,12 +3,12 @@
 <div class="my-4">
     <p-dropdown [options]="eras" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
     <p-dropdown [options]="rounds" [(ngModel)]="selectedRound" optionLabel="raceName" optionValue="round"></p-dropdown>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2" (click)="getLapTimes()">Search</button>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateChartTimes(totalResults, selectedLap - 1)" ><<</button>
+    <button class="bg-red-300 p-3 " (click)="getLapTimes()">Fetch results</button>
+    <button class="bg-red-300 p-3  font-bold rounded-full" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
     <label class="mx-4 text-white text-2xl">{{selectedLap+1}}</label>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="updateChartTimes(totalResults, selectedLap + 1)">>></button>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="playUpdateChartTimes()">Play</button>
-    <button class="bg-red-300 px-8 py-3 rounded-md mx-2 font-bold" (click)="pauseTimesFromMap()">Pause</button>
+    <button class="bg-w -300 p-3  font-bold rounded-full" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
+    <button class="bg-red-300 p-3  font-bold rounded-full" (click)="playUpdateChartTimes()"> <i class="pi pi-play" style="font-size: 1rem"> </i></button>
+    <button class="bg-red-300 p-3  font-bold rounded-full" (click)="pauseTimesFromMap()"> <i class="pi pi-pause" style="font-size: 1rem"> </i></button>
 </div>
 
 <ngx-charts-bar-horizontal
@@ -28,8 +28,8 @@
   (deactivate)="onDeactivate($event)"
   style="fill: #afb7c8;">
 
-   <ng-template #tooltipTemplate let-model="model">
-   Dif
+  <ng-template #tooltipTemplate let-model="model">
+  Dif
     <pre>{{model.extra.dif}}</pre>
   </ng-template> -->
   
