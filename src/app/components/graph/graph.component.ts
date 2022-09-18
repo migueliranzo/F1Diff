@@ -7,6 +7,8 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements OnInit {
+  playStatus: boolean = true;
+
   totalLaps;
   interval;
   selectedLap;
@@ -33,6 +35,7 @@ export class GraphComponent implements OnInit {
   positions: any[];
   lapTimes: any[];
   totalResults: any[] = [];
+  stop: boolean = true;
 
   constructor() {
     Object.assign(this, this.single);
@@ -96,7 +99,10 @@ export class GraphComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.laptimeToMS('1:27.347'));
     this.single = this.testDif;
+
   }
+
+  flipy = () => this.playStatus = !this.playStatus; 
 
   getYearEras(era) {
     console.log(era);
@@ -263,7 +269,13 @@ export class GraphComponent implements OnInit {
   }
 
   playUpdateChartTimes() {
-    this.setPlayInterval(this.totalResults);
+    if(this.playStatus){
+      this.setPlayInterval(this.totalResults);
+    }else{
+      this.pauseTimesFromMap();
+      
+    }
+  
   }
 
   msTimesToGraph() {
@@ -274,23 +286,27 @@ export class GraphComponent implements OnInit {
   }
 
   setPlayInterval(totalResults) {
-    this.interval = setInterval(() => {
-      console.log(this.selectedLap);
-      console.log(this.totalLaps);
-
-      if (this.selectedLap < this.totalLaps) {
-        this.updateView(
-          totalResults[this.selectedLap + 1],
-          this.selectedLap + 1
-        );
-      } else {
-        this.pauseTimesFromMap();
-      }
-    }, 1 * 1000);
+      this.stop = false;
+      this.interval = setInterval(() => {
+        console.log(this.selectedLap);
+        console.log(this.totalLaps);
+        
+        if (this.selectedLap < this.totalLaps) {
+          this.updateView(
+            totalResults[this.selectedLap + 1],
+            this.selectedLap + 1
+            );
+          } else {
+            this.pauseTimesFromMap();
+          }
+        }, 1 * 1000);
+      
   }
 
   pauseTimesFromMap() {
+    console.log("eeee");
     clearInterval(this.interval);
+    this.stop = true;
   }
 
   updateView(times, lap) {
@@ -310,4 +326,6 @@ export class GraphComponent implements OnInit {
 
     return mins + seconds + ms;
   }
+
+ 
 }
