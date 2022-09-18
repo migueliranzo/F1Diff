@@ -36,7 +36,8 @@ export class GraphComponent implements OnInit {
   lapTimes: any[];
   totalResults: any[] = [];
   stop: boolean = true;
-
+  pitStopsInfo: any;
+  pitStopInfo:any;
   constructor() {
     Object.assign(this, this.single);
   }
@@ -61,6 +62,7 @@ export class GraphComponent implements OnInit {
     { name: 'ericsson', value: 0, extra: { dif: 752000 } },
   ];
 
+  //A function could be made that takes a year and returns an array with the drivers and colors, make it work from 2000 to 2022
   customColors = [
     { name: 'perez', value: '#0000ff' },
     { name: 'alonso', value: '#1da8ba' },
@@ -97,7 +99,6 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.laptimeToMS('1:27.347'));
     this.single = this.testDif;
 
   }
@@ -105,7 +106,6 @@ export class GraphComponent implements OnInit {
   flipy = () => this.playStatus = !this.playStatus; 
 
   getYearEras(era) {
-    console.log(era);
 
     fetch('http://localhost:8000/api/f1/' + era + '.json').then((response) =>
       response.json().then((data) => {
@@ -114,35 +114,6 @@ export class GraphComponent implements OnInit {
     );
   }
 
-  getRaceData(race) {
-    console.log(race);
-    console.log(this.selectedEra);
-
-    fetch(
-      'http://localhost:8000/api/f1/' +
-        this.selectedEra +
-        '/' +
-        race +
-        '/results.json'
-    ).then((response) =>
-      response.json().then((data) => {
-        let results = data.MRData.RaceTable.Races[0].Results;
-
-        console.log(results);
-
-        let cleanResults = [];
-
-        results.forEach((element) => {
-          cleanResults.push({
-            name: element.Driver.givenName,
-            value: element.position,
-          });
-        });
-
-        this.single = cleanResults;
-      })
-    );
-  }
 
   getLapTimes() {
     this.lapTimes = [];
@@ -158,7 +129,6 @@ export class GraphComponent implements OnInit {
       response.json().then((data) => {
         let lapTimes = data.MRData.RaceTable.Races[0].Laps;
 
-        console.log(lapTimes);
         this.totalLaps = lapTimes.length - 1;
 
         this.selectedLap = 0;
@@ -194,14 +164,13 @@ export class GraphComponent implements OnInit {
         this.lapTimes = laplapTimes;
 
         this.msTimesToGraph();
-
-        console.log(this.totalResults);
-        console.log(poslapTimes);
-        console.log(laplapTimes);
-
+        
+      fetch('http://localhost:8000/api/f1/' +  this.selectedEra +  '/' +  this.selectedRound + '/pitstops.json').then( response => { response.json().then( data => {
+        this.pitStopsInfo = this.orderPitStops(data.MRData.RaceTable.Races[0].PitStops, this.lapTimes);
+        console.log(this.pitStopsInfo);
         this.updateChartTimes(this.totalResults, this.selectedLap);
-      })
-    );
+      }) } );
+      }));
   }
 
   getFastestTime(times, lap) {
@@ -266,6 +235,9 @@ export class GraphComponent implements OnInit {
 
   updateChartTimes(times, lap) { 
     this.updateView(times[lap], lap);
+    this.pitStopInfo = this.getLapPitStops(lap+1);
+    console.log(this.pitStopInfo);
+    
   }
 
   playUpdateChartTimes() {
@@ -288,14 +260,14 @@ export class GraphComponent implements OnInit {
   setPlayInterval(totalResults) {
       this.stop = false;
       this.interval = setInterval(() => {
-        console.log(this.selectedLap);
-        console.log(this.totalLaps);
         
         if (this.selectedLap < this.totalLaps) {
           this.updateView(
             totalResults[this.selectedLap + 1],
             this.selectedLap + 1
             );
+            
+            this.pitStopInfo = this.getLapPitStops(this.selectedLap+1);
           } else {
             this.pauseTimesFromMap();
           }
@@ -304,7 +276,6 @@ export class GraphComponent implements OnInit {
   }
 
   pauseTimesFromMap() {
-    console.log("eeee");
     clearInterval(this.interval);
     this.stop = true;
   }
@@ -312,7 +283,6 @@ export class GraphComponent implements OnInit {
   updateView(times, lap) {
     this.selectedLap = lap;
     this.single = times;
-    console.log(this.single);
 
     Object.assign(this, this.single);
   }
@@ -327,5 +297,37 @@ export class GraphComponent implements OnInit {
     return mins + seconds + ms;
   }
 
- 
+
+  orderPitStops(pitStops,lapTimes){
+    let orderedPitStops:any = [];
+
+    for (let i = 0; i < lapTimes.length; i++) {
+      let test = pitStops.filter( x => x.lap == i);
+      
+      if(test.length != 0){
+        orderedPitStops[i] = [];
+        orderedPitStops[i].push(test);
+      }
+    }
+    return orderedPitStops;
+  }
+
+  getLapPitStops(lap){
+    let stringPitStops = [];
+    let pitters = [];
+    if(this.pitStopsInfo[lap] != undefined){
+      this.pitStopsInfo[lap][0].forEach(x => {
+        pitters.push(x.driverId.toUpperCase());
+        //stringPitStops.push( `${x.driverId.toUpperCase()} stops, total stops: ${x.stop}`);
+      });
+      console.log(pitters.length);
+      
+      return  {1: `${pitters.toString().replace(/,/g, ', ')} boxes`, 
+              2: `${pitters[0]} and ${pitters[1]} box`,
+              3: `${pitters.toString().replace(/,/g, ', ')} enter the box`}[Math.min(3,pitters.length)] ;
+  }else{
+    return false;
+  }
+}
+
 }

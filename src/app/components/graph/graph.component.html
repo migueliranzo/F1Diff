@@ -1,21 +1,26 @@
 
 
-<div class="my-4 flex justify-evenly ">
-  <div class="flex justify-start items-baseline">
-    <p-dropdown [options]="eras"   class="mx-2" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
-    <p-dropdown [options]="rounds"   class="mx-2" [(ngModel)]="selectedRound" optionLabel="raceName" optionValue="round"></p-dropdown>
-    <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" (click)="getLapTimes()">Fetch results</button>
-  </div>
-  <label class="mx-4 text-white text-2xl">Lap {{selectedLap+1}}</label>
-  <div class="justify-end">
-    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
 
-    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-red-400"  [disabled]="totalLaps <= selectedLap" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
-    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full" [ngClass]="{'ring ring-red-300': !playStatus}" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
-  </div>
-</div>
+<div class="flex flex-row">
 
-<ngx-charts-bar-horizontal
+<div class="flex flex-col">
+
+  <div class="my-4 flex justify-evenly ">
+    <div class="flex justify-start items-baseline">
+      <p-dropdown [options]="eras"   class="mx-2" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
+      <p-dropdown [options]="rounds"   class="mx-2" [(ngModel)]="selectedRound" optionLabel="raceName" optionValue="round"></p-dropdown>
+      <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" (click)="getLapTimes()">Fetch results</button>
+    </div>
+    <label class="mx-4 text-white text-2xl">Lap {{selectedLap+1}}</label>
+    <div class="justify-end">
+      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
+      
+      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps <= selectedLap" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
+      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full" [ngClass]="{'ring ring-red-300': !playStatus}" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
+    </div>
+  </div>
+  
+  <ngx-charts-bar-horizontal
   [view]="view" 
   [results]="single"
   [gradient]="gradient"
@@ -28,16 +33,27 @@
   [xAxisLabel]="xAxisLabel"
   [yAxisLabel]="yAxisLabel"
   (select)="onSelect($event)"
-  (activate)="onActivate($event)"
-  (deactivate)="onDeactivate($event)"
-  style="fill: #afb7c8;">
+    (activate)="onActivate($event)"
+    (deactivate)="onDeactivate($event)"
+    style="fill: #afb7c8;">
+    
+    <ng-template #tooltipTemplate let-model="model">
+      Dif
+      <pre>{{model.extra.dif}}</pre>
+    </ng-template> -->
+    
+  </ngx-charts-bar-horizontal>
 
-  <ng-template #tooltipTemplate let-model="model">
-  Dif
-    <pre>{{model.extra.dif}}</pre>
-  </ng-template> -->
+</div>
   
-  
-  
+<div style="width: 400px; height: 900px;" class="text-white" >
 
-</ngx-charts-bar-horizontal>
+
+<div  *ngIf="pitStopInfo; then thenBlock else elseBlock"> </div>
+
+<ng-template #thenBlock>
+    {{pitStopInfo}}
+</ng-template>
+<ng-template #elseBlock></ng-template>
+</div>
+</div>
