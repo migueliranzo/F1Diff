@@ -39,7 +39,7 @@ export class GraphComponent implements OnInit {
   pitStopsInfo: any;
   pitStopInfo:any;
   finalResults: any[];
-  finalResultsObject: { name: any; position: any; status:any, textposition:any}[];
+  finalResultsObject: any;
   fastestLap: { driver: any; time: any; lap: any; };
   retirements: any;
   retirementsInfo: any;
@@ -184,7 +184,8 @@ export class GraphComponent implements OnInit {
       
       this.startingGrid = this.getStartingGrid(data.MRData.RaceTable.Races[0].Results);
       this.retirements = this.getRetirements(data.MRData.RaceTable.Races[0].Results);
-  
+      console.log(this.retirements);
+      
       this.msTimesToGraph();
       this.totalResults.push(this.formatFinalResults());
       
@@ -363,18 +364,21 @@ export class GraphComponent implements OnInit {
 }
 
 formatFinalResults(){
-  
-  this.finalResultsObject = this.finalResults.map(x => (({name: x.Driver.driverId.toUpperCase(), textposition: x.positionText, status: x.status,position: x.position})))
+  console.log(this.finalResults);
+  this.finalResultsObject = this.finalResults.map(x => (({name: x.Driver.driverId.toUpperCase(), textposition: x.position, position: x.position, finalTime: x.Time? x.Time.time :  x.status})))
 .sort((a,b) => Number(a.position) > Number(b.position) ? 1 : -1);
 
+console.log(this.finalResultsObject);
   
-
-  return this.finalResultsObject.map(x => (({name: x.name.toUpperCase(), value: 100})));
+  var increment:any = [200]
+  return this.finalResultsObject.map(x => (({name: x.name.toUpperCase(), value: increment = (increment-10)})));
 }
 
 getRetirements(data:any[]){
   
-  return data.filter(x=> x.positionText == "R").map(x=> ({driver:x.Driver.driverId.toUpperCase(),retirementLap: x.laps,retirementMotive: x.status}) );
+  var retiremntMotives = ["Retired","Accident"];
+
+  return data.filter(x=> retiremntMotives.includes(x.status) || x.positionText == "R").map(x=> ({driver:x.Driver.driverId.toUpperCase(),retirementLap: x.laps,retirementMotive: x.status}) );
 }
 
 getLapRetirements(lap){

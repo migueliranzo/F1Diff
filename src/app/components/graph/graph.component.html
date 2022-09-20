@@ -12,7 +12,8 @@
       <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" (click)="getLapTimes()">Fetch results</button>
     </div>
     <label *ngIf="selectedLap > totalLaps" class="mx-4 text-white text-2xl">Final Result</label>
-    <label *ngIf="selectedLap <= totalLaps" class="mx-4 text-white text-2xl">Lap {{selectedLap}}</label>
+    <label *ngIf="selectedLap <= totalLaps && selectedLap !=0" class="mx-4 text-white text-2xl">Lap {{selectedLap}}</label>
+    <label *ngIf="selectedLap == 0" class="mx-4 text-white text-2xl">Starting grid</label>
     <div class="justify-end">
       <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
       
@@ -54,10 +55,10 @@
     <table>
       <tbody>
         <tr>
-          <th class="underline px-2 ">Driver</th> <th  class="px-2 underline">Position</th> <th class="underline px-2 ">Finished status</th>
+          <th class="underline px-2 ">Driver</th> <th  class="px-2 underline">Position</th>  <th class="px-2 underline">Time</th>
         </tr>
         <tr *ngFor="let x of finalResultsObject"> 
-          <th align="left" class="px-2">{{x.name}} </th> <th align="left" class="px-2"> {{x.textposition}}</th> <th align="left" class="px-2">{{x.status}}</th>
+          <th align="left" class="px-2">{{x.name}} </th> <th  class="px-2"> {{x.textposition}}</th> <th class="px-2">{{x.finalTime}}</th>
         </tr>
       </tbody>
     </table>
@@ -105,7 +106,7 @@
         <th  class=" underline px-2" align="left">Driver</th> <th class=" underline px-2"> Reason</th>
       </tr>
       <tr *ngFor="let x of retirementsInfo"> 
-        <th align="left"  class="px-2">{{x.driver}} </th> <th  class="px-2"> {{x.retirementMotive}}</th >
+        <th align="left"  class="px-2">{{x.driver}} </th> <th  class="px-2"> {{x.retirementMotive == "Retired" ? "Voluntary retirement" : x.retirementMotive}}</th >
       </tr>
     </tbody>
   </table>
