@@ -11,12 +11,13 @@
       <p-dropdown [options]="rounds"   class="mx-2" [(ngModel)]="selectedRound" optionLabel="raceName" optionValue="round"></p-dropdown>
       <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" (click)="getLapTimes()">Fetch results</button>
     </div>
-    <label class="mx-4 text-white text-2xl">Lap {{selectedLap+1}}</label>
+    <label *ngIf="selectedLap > totalLaps" class="mx-4 text-white text-2xl">Final Result</label>
+    <label *ngIf="selectedLap <= totalLaps" class="mx-4 text-white text-2xl">Lap {{selectedLap}}</label>
     <div class="justify-end">
       <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
       
-      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps <= selectedLap" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
-      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full" [ngClass]="{'ring ring-red-300': !playStatus}" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
+      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps+1 == selectedLap" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
+      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:ring-0 disabled:bg-[#e76f51ab]" [ngClass]="{'ring ring-red-300': !playStatus}" [disabled]="totalLaps+1 == selectedLap" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
     </div>
   </div>
   
@@ -48,7 +49,7 @@
   
 <div style="width: 400px; height: 900px;" class="text-white" >
 
-  <div *ngIf="selectedLap == totalLaps">
+  <div *ngIf="selectedLap == totalLaps+1">
     <p class="text-lg flex border-b border-white my-3 justify-center">🏁  Race results  🏁</p>  
     <table>
       <tbody>
@@ -56,7 +57,7 @@
           <th class="underline px-2 ">Driver</th> <th  class="px-2 underline">Position</th> <th class="underline px-2 ">Finished status</th>
         </tr>
         <tr *ngFor="let x of finalResultsObject"> 
-          <th align="left" class="px-2">{{x.name}} </th> <th align="left" class="px-2"> {{x.position}}</th> <th align="left" class="px-2">{{x.status}}</th>
+          <th align="left" class="px-2">{{x.name}} </th> <th align="left" class="px-2"> {{x.textposition}}</th> <th align="left" class="px-2">{{x.status}}</th>
         </tr>
       </tbody>
     </table>
@@ -83,7 +84,7 @@
 </ng-template>
 <ng-template #elseBlock></ng-template>
 
-<div *ngIf="fastestLap && (fastestLap.lap == selectedLap+1 || selectedLap == totalLaps)">
+<div *ngIf="fastestLap && (fastestLap.lap == selectedLap || selectedLap == totalLaps+1)">
   <p class="text-lg flex border-b border-white my-3 justify-center">⏱   Fastest lap  ⏱ </p>  
   <table>
     <tbody>
