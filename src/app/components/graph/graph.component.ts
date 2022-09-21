@@ -44,6 +44,8 @@ export class GraphComponent implements OnInit {
   retirements: any;
   retirementsInfo: any;
   startingGrid: any;
+  gainedPositions: any;
+
   constructor() {
     Object.assign(this, this.single);
   }
@@ -179,13 +181,13 @@ export class GraphComponent implements OnInit {
       fetch('http://localhost:8000/api/f1/' +  this.selectedEra +  '/' +  this.selectedRound + '/results.json').then(response => { response.json().then( data => {
       this.finalResults = (data.MRData.RaceTable.Races[0].Results);
 
-      console.log("🥠 ");
-      console.log(data.MRData.RaceTable.Races[0].Results);
+      console.log("🐢  ");
       
       this.startingGrid = this.getStartingGrid(data.MRData.RaceTable.Races[0].Results);
       this.retirements = this.getRetirements(data.MRData.RaceTable.Races[0].Results);
-      console.log(this.retirements);
+      console.log(this.finalResults);
       
+      //this.gainedPositions == (this.getGainedPositions(data.MRData.RaceTable.Races[0].Results));
       this.msTimesToGraph();
       this.totalResults.push(this.formatFinalResults());
       
@@ -364,8 +366,7 @@ export class GraphComponent implements OnInit {
 }
 
 formatFinalResults(){
-  console.log(this.finalResults);
-  this.finalResultsObject = this.finalResults.map(x => (({name: x.Driver.driverId.toUpperCase(), textposition: x.position, position: x.position, finalTime: x.Time? x.Time.time :  x.status})))
+  this.finalResultsObject = this.finalResults.map(x => (({name: x.Driver.driverId.toUpperCase(), textposition: x.position, position: x.position, finalTime: x.Time? x.Time.time :  x.status, gainedPositions: Number(x.grid) - Number(x.position)})))
 .sort((a,b) => Number(a.position) > Number(b.position) ? 1 : -1);
 
 console.log(this.finalResultsObject);
@@ -412,5 +413,29 @@ getStartingGrid(data){
     return formated;    
 }
 
+getGainedPositions(data){
+
+  let formated = data.map(x=> ({driver:x.Driver.driverId, gainedPositions: Number(x.grid) - Number(x.position)}));
+
+  console.log("🥶 ");
+  console.log(formated);
+  
+  
+  return formated;
 }
+
+}
+
+//Hacer iconos mas grandes/botones mas small
+
+//TOOD Improve initial view, maybe dont show the graphic or show it empty?? or a big text saying waiting for input....
+
+//TODO add spinners and block the play buttons you need to fetch first, add form msgs when the user clicks play and hasnt clicked fetch yet
+
+//TODO Poner los colores del 2000 hasta hoy
+
+//TODO  hacer el grafico responsive o algo
+
+//TODO Olvidar landing page y globo, hacer la pagina como si fuerra una herramienta, no una webapp
+
 
