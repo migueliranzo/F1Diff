@@ -9,7 +9,9 @@ export class GlobeComponent implements OnInit {
 
   circuitdata:any = null;
   word2: any;
+  flip: any = 0;
 
+  globeSeasons: any[] = null; 
   constructor() { }
 
   ngOnInit(): void {
@@ -54,6 +56,30 @@ const tilesData = [];
    // console.log(data.MRData.CircuitTable.Circuits);// @ts-ignore 
     this.circuitdata = data.MRData.CircuitTable.Circuits;
     //console.log(data.MRData.RaceTable.Races[3].Circuit.Location.long);
+
+    fetch('http://localhost:8000/api/f1/1981.json').then(response => response.json()).then(data => {
+      console.log(data);
+      let seasonRaces = [];
+      for (let i = 1; i < data.MRData.RaceTable.Races.length-1; i++) {
+        const x = data.MRData.RaceTable.Races[i].Circuit.Location;
+        const y = data.MRData.RaceTable.Races[i+1].Circuit.Location;
+        console.log(x)
+        seasonRaces.push({
+          season: data.MRData.RaceTable.season,
+          round: data.MRData.RaceTable.Races[i].round,
+          startName: data.MRData.RaceTable.Races[i].raceName,
+          endName: data.MRData.RaceTable.Races[i+1].raceName,
+          startLat: x.lat,
+          startLng: x.long,
+          endLat: y.lat,
+          endLng: y.long,
+          color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
+        })
+      }
+      this.globeSeasons = seasonRaces;
+      console.log(this.globeSeasons);
+    });
+
     var itemsProcessed = 0;
     this.circuitdata.forEach((element: any) => {
 
@@ -66,7 +92,7 @@ const tilesData = [];
 
           element["timesraced"] = parseInt(data.MRData.total);
         }
-        console.log(data.MRData.total);
+        //console.log(data.MRData.total);
         itemsProcessed++;
         if(itemsProcessed === this.circuitdata.length) {
     
@@ -81,9 +107,13 @@ const tilesData = [];
                     color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)]
                   }));
 
+                  console.log(arcsData);
+                  
+
                   // @ts-ignore 
                   const world = Globe()
                     (document.getElementById('globeViz'))
+                    .lineHoverPrecision(1)
                     .globeImageUrl('assets/earth-dark2.jpg')
                     .backgroundColor('rgba(255,0,0,0.10)')   
                     // @ts-ignore 
@@ -108,7 +138,14 @@ const tilesData = [];
                     .atmosphereColor("cyan")
                     .atmosphereAltitude(".15")
 // @ts-ignore 
-                    .onTileHover(() => world.controls().autoRotate = true )
+                    .onTileHover(() => {
+                      //world.controls().autoRotate = true
+                      
+                      
+                     // if(world.arcDashGap() == 0){
+                       // world.arcDashGap(4)
+                      //} 
+                    })
 
                     .tilesData(tilesData)
                     .tileWidth(tileWidth)
@@ -127,17 +164,26 @@ const tilesData = [];
                     <div style="text-align: center; cursor:pointer; display:flex; background-color: rgb(0,0,0,0.3)">
                     ${d.points[0].circuitName}, <b>&nbsp${d.points[0].Location.locality} </b>
                     </div>`)
-                    .onHexHover(()=> world.controls().autoRotate = false)
-                    .onPointHover((d)=> console.log(d))
+                    .onHexHover((x)=> world.controls().autoRotate = !x)
 
-                    .lineHoverPrecision(0)
-                    .arcsData(arcsData)
-                    .arcColor('color')
+                    .arcsData(this.globeSeasons)
+                  
+                    .arcColor(d => [`rgba(225, 6, 0, 1)`, `rgba(225, 6, 0, 1)`])
                     .arcDashLength(0.4)
                     .arcDashGap(4)
+                    .arcLabel((d) => `${d.season}  ${d.round}° round <div> ${d.startName} &#8594 ${d.endName}</div>`)
                     .arcDashInitialGap(() => Math.random() * 5)
-                    .arcDashAnimateTime(1000);
+                    .arcDashAnimateTime(1000) //1000
+                    .onArcHover(hoverArc => world
+                      .arcColor(d => {
+                        const op = !hoverArc ? 0.9 : d === hoverArc ? 0.9 : 0.9 / 4;
+                        return [`rgba(225, 6, 0, ${op})`, `rgba(225, 6, 0, ${op})`];
+                      }).arcDashGap(Number(!hoverArc) * 4)
+                      .controls().autoRotate = !hoverArc
                     
+                      )
+                    
+
                     // Add auto-rotation
                     world.controls().autoRotate = true;
                     world.controls().autoRotateSpeed = 0.3;  
@@ -157,8 +203,6 @@ const tilesData = [];
   });
 
   
-
-
   }
 
 
