@@ -216,6 +216,7 @@ const tilesData = [];
 
   //Check if you can improve the globe astehtics, make it cooler like the github one -> the height of the border should be smaller probably, depends on final globe size
   //Check Github globe as we are sheeking some same position/protagonism on our website, cool tailwind tags + the globe, the globe is decoration afterall
+  //Clean weird season loop thats making a ton of API calls
 
   test2(clickedPlace:any){
     console.log(clickedPlace);

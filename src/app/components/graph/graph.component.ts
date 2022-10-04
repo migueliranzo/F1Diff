@@ -132,8 +132,15 @@ export class GraphComponent implements OnInit {
 
 
   getLapTimes() {
+    
     this.lapTimes = [];
     this.totalResults = [];
+    
+    //refactor this into a function
+    this.finalResultsObject = null
+    this.fastestLap = null;
+    this.retirementsInfo = null;
+    this.pitStopInfo = null;
 
     fetch(
       'http://localhost:8000/api/f1/' +
@@ -435,8 +442,9 @@ getGainedPositions(data){
 
 }
 
+//TODO fix starting position graph on older races
 
-//TOOD Improve initial view, maybe dont show the graphic or show it empty?? or a big text saying waiting for input....
+//Starting text telling the user what to do
 
 //TODO add spinners and block the play buttons you need to fetch first, add form msgs when the user clicks play and hasnt clicked fetch yet
 
