@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import {Router} from "@angular/router"
 @Component({
   selector: 'app-globe',
   templateUrl: './globe.component.html',
@@ -10,9 +10,10 @@ export class GlobeComponent implements OnInit {
   circuitdata:any = null;
   word2: any;
   flip: any = 0;
-
+  eras = [1996,1997 ,1998 ,1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
+  
   globeSeasons: any[] = null; 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
 // @ts-ignore 
@@ -20,6 +21,7 @@ export class GlobeComponent implements OnInit {
    // .domain([0, 1e7]);
 // @ts-ignore 
 
+var selectedEra = this.eras[Math.floor(Math.random()*this.eras.length)];
 
 
 // Gen random data
@@ -57,7 +59,7 @@ const tilesData = [];
     this.circuitdata = data.MRData.CircuitTable.Circuits;
     //console.log(data.MRData.RaceTable.Races[3].Circuit.Location.long);
 
-    fetch('http://localhost:8000/api/f1/1981.json').then(response => response.json()).then(data => {
+    fetch('http://localhost:8000/api/f1/' + selectedEra + '.json').then(response => response.json()).then(data => {
       console.log(data);
       let seasonRaces = [];
       for (let i = 1; i < data.MRData.RaceTable.Races.length-1; i++) {
@@ -92,7 +94,7 @@ const tilesData = [];
 
           element["timesraced"] = parseInt(data.MRData.total);
         }
-        //console.log(data.MRData.total);
+
         itemsProcessed++;
         if(itemsProcessed === this.circuitdata.length) {
     
@@ -115,12 +117,13 @@ const tilesData = [];
                     (document.getElementById('globeViz'))
                     .lineHoverPrecision(1)
                     .globeImageUrl('assets/earth-dark2.jpg')
-                    .backgroundColor('rgba(255,0,0,0.10)')   
+                    .backgroundColor('rgba(255,0,0,0)')   
                     // @ts-ignore 
                     .polygonsData(countries.features.filter(d => d.properties.ISO_A2 !== 'AQ')) // @ts-ignore   .polygonAltitude(0.01)// @ts-ignore 
                     .polygonCapColor(() => 'rgb(37,42,48)')
                     .polygonSideColor(() => '#111315')
                     .polygonStrokeColor(() => '#fffff')// @ts-ignore 
+                    .polygonCapCurvatureResolution(1)
                     .labelsData(this.circuitdata) // @ts-ignore 
                     .labelLat(d => d.Location.lat) // @ts-ignore 
                     .labelLng(d => d.Location.long) // @ts-ignore 
@@ -138,14 +141,7 @@ const tilesData = [];
                     .atmosphereColor("cyan")
                     .atmosphereAltitude(".15")
 // @ts-ignore 
-                    .onTileHover(() => {
-                      //world.controls().autoRotate = true
-                      
-                      
-                     // if(world.arcDashGap() == 0){
-                       // world.arcDashGap(4)
-                      //} 
-                    })
+
 
                     .tilesData(tilesData)
                     .tileWidth(tileWidth)
@@ -159,23 +155,28 @@ const tilesData = [];
                     .hexBinPointWeight(21)
                     .hexAltitude(0.1)
                     .hexTopColor(() => '#55aaff')
-                    .hexSideColor(() => '#ddeeff40')// @ts-ignore 
+                    .hexSideColor(() => '#ddeeff40')
                     .hexLabel((d) =>  `
-                    <div style="text-align: center; cursor:pointer; display:flex; background-color: rgb(0,0,0,0.3)">
+                    <div style="text-align: center; cursor:pointer; display:flex; background-color: rgba(0, 0, 0, 0.4);
+                    backdrop-filter: blur(10px); border-radius: 5px; padding: 10px 6px 10px 6px";">
                     ${d.points[0].circuitName}, <b>&nbsp${d.points[0].Location.locality} </b>
                     </div>`)
                     .onHexHover((x)=> world.controls().autoRotate = !x)
 
                     .arcsData(this.globeSeasons)
-                  
                     .arcColor(d => [`rgba(225, 6, 0, 1)`, `rgba(225, 6, 0, 1)`])
                     .arcDashLength(0.4)
                     .arcDashGap(4)
-                    .arcLabel((d) => `${d.season}  ${d.round}° round <div> ${d.startName} &#8594 ${d.endName}</div>`)
+                    .arcLabel((d) => `<div style="background-color: rgba(0, 0, 0, 0.4);
+                    backdrop-filter: blur(10px); border-radius: 5px; padding: 10px 6px 10px 6px";>
+                    ${d.startName} &#8594 ${d.endName}
+                    <div style="color: #959da5 !important; font-size: 14px;"> ${d.round}° round ${d.season} </div> 
+                      </div>`)
+                    .onArcClick(x=> this.arcToGraph(x))
                     .arcDashInitialGap(() => Math.random() * 5)
-                    .arcDashAnimateTime(1000) //1000
+                    .arcDashAnimateTime(1000) 
                     .onArcHover(hoverArc => world
-                      .arcColor(d => {
+                    .arcColor(d => {
                         const op = !hoverArc ? 0.9 : d === hoverArc ? 0.9 : 0.9 / 4;
                         return [`rgba(225, 6, 0, ${op})`, `rgba(225, 6, 0, ${op})`];
                       }).arcDashGap(Number(!hoverArc) * 4)
@@ -204,14 +205,16 @@ const tilesData = [];
 
   
   }
+  arcToGraph(x: any) {
+  let cont = {era: x.season, round: x.round}; 
+  console.log(cont);
+  
+  this.router.navigate(['/graph',cont])
+  }
 
 
 
-  //IDEA, SHOW ONLY THE RACES ON A PER YEAR BASES, SO ONLY THE 2021 CIRCUITS 
-  //THEN SHOW AN ARC FROM RACE TO RACE IN ORDER THEY ARE RACED, so it shows like ooo so cool it goes from spain to italy, bla bla...
-
-  //Example of arcs: https://globe.gl/#points-layer on the hightlight arc section and the random arcs, we can also get some samples at and https://github.com/vasturiano/three-globe#utility arc section aswell
-
+  //Check if you can improve the globe astehtics, make it cooler like the github one -> the height of the border should be smaller probably, depends on final globe size
   //Check Github globe as we are sheeking some same position/protagonism on our website, cool tailwind tags + the globe, the globe is decoration afterall
 
   test2(clickedPlace:any){

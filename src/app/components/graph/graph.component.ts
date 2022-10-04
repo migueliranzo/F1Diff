@@ -1,6 +1,7 @@
 import { Component, NgModule, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
@@ -16,11 +17,7 @@ export class GraphComponent implements OnInit {
   selectedRound;
   single = [];
   rounds: any = [];
-  //eras = [1950, 1951, 1952, 1953, 1954, 1955, 1956, 1957, 1958, 1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971, 1972, 1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020];
-  eras = [
-    2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011,
-    2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021,
-  ];
+  eras = [1996,1997 ,1998 ,1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
   view: [number, number] = [1200, 700];
 
   // options
@@ -46,7 +43,7 @@ export class GraphComponent implements OnInit {
   startingGrid: any;
   gainedPositions: any;
 
-  constructor() {
+  constructor(private route:ActivatedRoute ) {
     Object.assign(this, this.single);
   }
 
@@ -107,6 +104,17 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      if(params.get('era') == undefined) {return}
+      var era = Number(params.get('era'));
+      var round = params.get('round');
+      this.selectedEra = era;
+      this.selectedRound = round;
+      this.getYearEras(era)
+      this.getLapTimes();
+    });
+    
     this.single = this.testDif;
 
   }
@@ -174,20 +182,19 @@ export class GraphComponent implements OnInit {
         
         
       fetch('http://localhost:8000/api/f1/' +  this.selectedEra +  '/' +  this.selectedRound + '/pitstops.json').then( response => { response.json().then( data => {
+        if(data.MRData.RaceTable.Races.length == 0) {return}
         this.pitStopsInfo = this.orderPitStops(data.MRData.RaceTable.Races[0].PitStops, this.lapTimes);
       
       }) } );
 
       fetch('http://localhost:8000/api/f1/' +  this.selectedEra +  '/' +  this.selectedRound + '/results.json').then(response => { response.json().then( data => {
+        if(data.MRData.RaceTable.Races.length == 0) {return}
       this.finalResults = (data.MRData.RaceTable.Races[0].Results);
 
-      console.log("🐢  ");
-      
       this.startingGrid = this.getStartingGrid(data.MRData.RaceTable.Races[0].Results);
       this.retirements = this.getRetirements(data.MRData.RaceTable.Races[0].Results);
       console.log(this.finalResults);
       
-      //this.gainedPositions == (this.getGainedPositions(data.MRData.RaceTable.Races[0].Results));
       this.msTimesToGraph();
       this.totalResults.push(this.formatFinalResults());
       
@@ -195,7 +202,7 @@ export class GraphComponent implements OnInit {
       } )});
 
       fetch('http://localhost:8000/api/f1/' +  this.selectedEra +  '/' +  this.selectedRound + '/fastest/1/results.json').then(response => { response.json().then( data => {
-        
+        if(data.MRData.RaceTable.Races.length == 0) {return}
         let fastestLapRaw = data.MRData.RaceTable.Races[0].Results[0];
         this.fastestLap = {driver: fastestLapRaw.Driver.driverId.toUpperCase(), time: fastestLapRaw.FastestLap.Time.time, lap: fastestLapRaw.FastestLap.lap};
         
@@ -353,6 +360,8 @@ export class GraphComponent implements OnInit {
     let pitters = [];
 
     
+    //@ts-ignore
+    if(this.pitStopsInfo == undefined) {return}
     if(this.pitStopsInfo[lap] != undefined){
 
       this.pitStopsInfo[lap][0].forEach(x => {
@@ -426,7 +435,6 @@ getGainedPositions(data){
 
 }
 
-//Hacer iconos mas grandes/botones mas small
 
 //TOOD Improve initial view, maybe dont show the graphic or show it empty?? or a big text saying waiting for input....
 
@@ -436,6 +444,5 @@ getGainedPositions(data){
 
 //TODO  hacer el grafico responsive o algo
 
-//TODO Olvidar landing page y globo, hacer la pagina como si fuerra una herramienta, no una webapp
 
 
