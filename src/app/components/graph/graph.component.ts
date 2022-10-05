@@ -67,7 +67,7 @@ export class GraphComponent implements OnInit {
     { name: 'ericsson', value: 0, extra: { dif: 752000 } },
   ];
 
-  //A function could be made that takes a year and returns an array with the drivers and colors, make it work from 2000 to 2022
+  //A function could be made that takes a year and returns an array with the drivers and colors, make it work from 1996 to 2022
   customColors = [
     { name: 'perez', value: '#0000ff' },
     { name: 'alonso', value: '#1da8ba' },
@@ -197,9 +197,10 @@ export class GraphComponent implements OnInit {
       fetch('http://localhost:8000/api/f1/' +  this.selectedEra +  '/' +  this.selectedRound + '/results.json').then(response => { response.json().then( data => {
         if(data.MRData.RaceTable.Races.length == 0) {return}
       this.finalResults = (data.MRData.RaceTable.Races[0].Results);
-
+      
       this.startingGrid = this.getStartingGrid(data.MRData.RaceTable.Races[0].Results);
       this.retirements = this.getRetirements(data.MRData.RaceTable.Races[0].Results);
+      
       console.log(this.finalResults);
       
       this.msTimesToGraph();
@@ -393,9 +394,15 @@ console.log(this.finalResultsObject);
 
 getRetirements(data:any[]){
   
-  var retiremntMotives = ["Retired","Accident"];
+  data.forEach(x=> {
+    if(x.laps == 0){
+      x.laps = 1 
+    }
+  })
 
-  return data.filter(x=> retiremntMotives.includes(x.status) || x.positionText == "R").map(x=> ({driver:x.Driver.driverId.toUpperCase(),retirementLap: x.laps,retirementMotive: x.status}) );
+  var retirementMotives = ["Retired","Accident"];
+
+  return data.filter(x=> retirementMotives.includes(x.status) || x.positionText == "R").map(x=> ({driver:x.Driver.driverId.toUpperCase(),retirementLap: x.laps,retirementMotive: x.status}) );
 }
 
 getLapRetirements(lap){
@@ -417,9 +424,15 @@ getStartingGrid(data){
 
     let sorted = data.sort((a,b) => Number(a.grid) > Number(b.grid) ? 1 : -1);
 
+    
+    if(sorted.find(x=> x.grid == 0)){
+      sorted.push(sorted.splice(0, 1)[0]);
+    }
+
     let formated = [];
 
-    let fakeData = 200;
+    let fakeData = sorted.length * 10;  
+
     for (let i = 0; i < sorted.length; i++) {
       fakeData -= 10;
       const x = sorted[i];
@@ -442,11 +455,6 @@ getGainedPositions(data){
 
 }
 
-//TODO fix starting position graph on older races
-
-//Starting text telling the user what to do
-
-//TODO add spinners and block the play buttons you need to fetch first, add form msgs when the user clicks play and hasnt clicked fetch yet
 
 //TODO Poner los colores del 2000 hasta hoy
 
