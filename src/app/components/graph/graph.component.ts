@@ -2,6 +2,7 @@ import { Component, NgModule, OnInit } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { TeamcolorsService } from '../services/teamcolors.service';
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
@@ -43,7 +44,7 @@ export class GraphComponent implements OnInit {
   startingGrid: any;
   gainedPositions: any;
 
-  constructor(private route:ActivatedRoute ) {
+  constructor(private route:ActivatedRoute, private colorService: TeamcolorsService ) {
     Object.assign(this, this.single);
   }
 
@@ -122,7 +123,7 @@ export class GraphComponent implements OnInit {
   flipy = () => this.playStatus = !this.playStatus; 
 
   getYearEras(era) {
-
+    this.customColors = this.colorService.getTeamColors(era);
     fetch('http://localhost:8000/api/f1/' + era + '.json').then((response) =>
       response.json().then((data) => {
         this.rounds = data.MRData.RaceTable.Races;
@@ -386,9 +387,8 @@ formatFinalResults(){
   this.finalResultsObject = this.finalResults.map(x => (({name: x.Driver.driverId.toUpperCase(), textposition: x.position, position: x.position, finalTime: x.Time? x.Time.time :  x.status, gainedPositions: Number(x.grid) - Number(x.position)})))
 .sort((a,b) => Number(a.position) > Number(b.position) ? 1 : -1);
 
-console.log(this.finalResultsObject);
   
-  var increment:any = [200]
+  var increment:any = [10 * this.finalResultsObject.length]
   return this.finalResultsObject.map(x => (({name: x.name.toUpperCase(), value: increment = (increment-10)})));
 }
 
@@ -423,11 +423,21 @@ getLapRetirements(lap){
 getStartingGrid(data){
 
     let sorted = data.sort((a,b) => Number(a.grid) > Number(b.grid) ? 1 : -1);
-
-    
-    if(sorted.find(x=> x.grid == 0)){
-      sorted.push(sorted.splice(0, 1)[0]);
+    let temp = [];
+    for (let i = 0; i < sorted.length; i++) {
+      const driver = sorted[i];
+      if(driver.grid == 0){
+        let adjustedDriver = {...driver};
+        sorted.splice(i,1);
+        adjustedDriver.grid = sorted.length;
+        temp.push(adjustedDriver)
+        i--;
+      }
     }
+
+    temp.forEach(x => {
+      sorted.push(x);
+    });
 
     let formated = [];
 
@@ -436,7 +446,7 @@ getStartingGrid(data){
     for (let i = 0; i < sorted.length; i++) {
       fakeData -= 10;
       const x = sorted[i];
-      formated.push({name:sorted[i].Driver.driverId.toUpperCase(),value:fakeData});
+      formated.push({name:sorted[i].Driver.driverId,value:fakeData});
     }
 
     return formated;    
