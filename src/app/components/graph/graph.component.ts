@@ -22,7 +22,11 @@ export class GraphComponent implements OnInit {
   selectedRound;
   single = [];
   rounds: any = [];
-  eras = [1996,1997 ,1998 ,1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
+  eras = [
+    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
+    2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
+    2020, 2021,
+  ];
   view: [number, number] = [1200, 700];
 
   // options
@@ -39,16 +43,20 @@ export class GraphComponent implements OnInit {
   totalResults: any[] = [];
   stop: boolean = true;
   pitStopsInfo: any;
-  pitStopInfo:any;
+  pitStopInfo: any;
   finalResults: any[];
   finalResultsObject: any;
-  fastestLap: { driver: any; time: any; lap: any; };
+  fastestLap: { driver: any; time: any; lap: any };
   retirements: any;
   retirementsInfo: any;
   startingGrid: any;
   rounds$: any;
 
-  constructor(private route:ActivatedRoute, private colorService: TeamcolorsService, private graphService: GraphService ) {
+  constructor(
+    private route: ActivatedRoute,
+    private colorService: TeamcolorsService,
+    private graphService: GraphService
+  ) {
     Object.assign(this, this.single);
   }
 
@@ -67,94 +75,105 @@ export class GraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  
     this.route.paramMap.subscribe((params: ParamMap) => {
-      if(params.get('era') == undefined) {return}
+      if (params.get('era') == undefined) {
+        return;
+      }
       var era = Number(params.get('era'));
       var round = params.get('round');
       this.selectedEra = era;
       this.selectedRound = round;
-      this.getYearEras(era)
+      this.getYearEras(era);
       this.getAndFormatLaps();
     });
-
   }
 
-  flipy = () => this.playStatus = !this.playStatus; 
+  flipy = () => (this.playStatus = !this.playStatus);
 
   getYearEras(era) {
-
-    //@ts-ignore
-    this.rounds$ = this.graphService.getEras(era).pipe(map(x => x.MRData.RaceTable.Races));
+    this.rounds$ = this.graphService
+      .getEras(era) //@ts-ignore
+      .pipe(map((x) => x.MRData.RaceTable.Races));
     this.customColors = this.colorService.getTeamColors(era);
   }
 
-  updateChartTimes(times, lap) { 
+  updateChartTimes(times, lap) {
     this.updateView(times[lap], lap);
     this.pitStopInfo = this.getLapPitStops(lap);
     this.retirementsInfo = this.getLapRetirements(lap);
-    
   }
 
   updateView(times, lap) {
     this.selectedLap = lap;
     this.single = times;
-    
+
     Object.assign(this, this.single);
   }
 
-
   getAndFormatLaps() {
-    
     this.totalResults = [];
-    
+
     this.resetRaceEvents();
 
-    this.graphService.getLapTimes(this.selectedEra, this.selectedRound).subscribe(response => {
-      let lapTimes = response;
-      this.totalLaps = lapTimes.length;
-      this.selectedLap = 0;
-        
-      this.setPositionsAndGaps(lapTimes);
+    this.graphService
+      .getLapTimes(this.selectedEra, this.selectedRound)
+      .subscribe((response) => {
+        let lapTimes = response;
+        this.totalLaps = lapTimes.length;
+        this.selectedLap = 0;
 
-      this.graphService.getPitStopts(this.selectedEra, this.selectedRound).subscribe(response =>{
-        if(response == "notFound") {return}
-        this.pitStopsInfo = this.orderPitStops(response, this.lapTimes);
-      });
+        this.setPositionsAndGaps(lapTimes);
 
-      this.graphService.getRaceResults(this.selectedEra, this.selectedRound).subscribe(response =>{
-        if(response == "notFound") {return}
-        this.finalResults = response;
-        this.startingGrid = this.getStartingGrid(response);
-        this.retirements = this.getRaceRetirements(response)
-        
-        this.msTimesToGraph();
-        this.totalResults.push(this.formatFinalResults());
-        this.updateChartTimes(this.totalResults, this.selectedLap);
-      });
+        this.graphService
+          .getPitStopts(this.selectedEra, this.selectedRound)
+          .subscribe((response) => {
+            if (response == 'notFound') {
+              return;
+            }
+            this.pitStopsInfo = this.orderPitStops(response, this.lapTimes);
+          });
 
-      this.graphService.getFastestLap(this.selectedEra, this.selectedRound).subscribe(response =>{
-        if(response == "notFound") {return}
-        this.fastestLap = {driver: response.Driver.driverId.toUpperCase(), time: response.FastestLap.Time.time, lap: response.FastestLap.lap};
+        this.graphService
+          .getRaceResults(this.selectedEra, this.selectedRound)
+          .subscribe((response) => {
+            if (response == 'notFound') {
+              return;
+            }
+            this.finalResults = response;
+            this.startingGrid = this.getStartingGrid(response);
+            this.retirements = this.getRaceRetirements(response);
+
+            this.msTimesToGraph();
+            this.totalResults.push(this.formatFinalResults());
+            this.updateChartTimes(this.totalResults, this.selectedLap);
+          });
+
+        this.graphService
+          .getFastestLap(this.selectedEra, this.selectedRound)
+          .subscribe((response) => {
+            if (response == 'notFound') {
+              return;
+            }
+            this.fastestLap = {
+              driver: response.Driver.driverId.toUpperCase(),
+              time: response.FastestLap.Time.time,
+              lap: response.FastestLap.lap,
+            };
+          });
       });
-      
-    });
   }
-  
 
   msTimesToGraph() {
     for (let i = 0; i < this.lapTimes.length; i++) {
       let cleanResults = this.formatLapsForGraph(this.lapTimes, i);
-    
+
       this.totalResults.push(cleanResults);
     }
     this.totalResults.unshift(this.startingGrid);
     console.log(this.totalResults);
-    
   }
 
-  setPositionsAndGaps(lapTimes){
-
+  setPositionsAndGaps(lapTimes) {
     let laplapTimes = [];
     let poslapTimes = [];
 
@@ -197,12 +216,11 @@ export class GraphComponent implements OnInit {
   }
 
   resetRaceEvents() {
-    this.finalResultsObject = null
+    this.finalResultsObject = null;
     this.fastestLap = null;
     this.retirementsInfo = null;
     this.pitStopInfo = null;
   }
-
 
   formatLapsForGraph(times, lap) {
     let cleanResults = [];
@@ -220,7 +238,7 @@ export class GraphComponent implements OnInit {
         cleanResults.push({
           name: key.toUpperCase(),
           value: 100 - slowest,
-          extra: { dif: "Leading" },
+          extra: { dif: 'Leading' },
         });
       } else {
         let curDriver = this.positions[lap].get(key);
@@ -240,7 +258,6 @@ export class GraphComponent implements OnInit {
     }
     return cleanResults;
   }
-
 
   getFastestTime(times, lap) {
     let fastest = 999999999;
@@ -264,52 +281,44 @@ export class GraphComponent implements OnInit {
     return slowest;
   }
 
-
   playUpdateChartTimes() {
-    if(this.playStatus){
+    if (this.playStatus) {
       this.setPlayInterval(this.totalResults);
-    }else{
+    } else {
       this.pauseTimesFromMap();
-      
     }
   }
-
 
   pauseTimesFromMap() {
     clearInterval(this.interval);
     this.stop = true;
   }
 
-
   setPlayInterval(totalResults) {
-      this.stop = false;
-      this.interval = setInterval(() => {
-        
-        if (this.selectedLap <= this.totalLaps) {
-          this.updateView(
-            totalResults[this.selectedLap + 1],
-            this.selectedLap + 1
-            );
-            
-            this.pitStopInfo = this.getLapPitStops(this.selectedLap+1);
-            this.retirementsInfo = this.getLapRetirements(this.selectedLap+1);
+    this.stop = false;
+    this.interval = setInterval(() => {
+      if (this.selectedLap <= this.totalLaps) {
+        this.updateView(
+          totalResults[this.selectedLap + 1],
+          this.selectedLap + 1
+        );
 
-          } else {
-            this.playStatus = !this.playStatus;
-            this.pauseTimesFromMap();
-          }
-        }, 1 * 1000);
-      
+        this.pitStopInfo = this.getLapPitStops(this.selectedLap + 1);
+        this.retirementsInfo = this.getLapRetirements(this.selectedLap + 1);
+      } else {
+        this.playStatus = !this.playStatus;
+        this.pauseTimesFromMap();
+      }
+    }, 1 * 1000);
   }
 
-
-  orderPitStops(pitStops,lapTimes){
-    let orderedPitStops:any = [];
+  orderPitStops(pitStops, lapTimes) {
+    let orderedPitStops: any = [];
 
     for (let i = 0; i < lapTimes.length; i++) {
-      let test = pitStops.filter( x => x.lap == i);
-      
-      if(test.length != 0){
+      let test = pitStops.filter((x) => x.lap == i);
+
+      if (test.length != 0) {
         orderedPitStops[i] = [];
         orderedPitStops[i].push(test);
       }
@@ -317,102 +326,111 @@ export class GraphComponent implements OnInit {
     return orderedPitStops;
   }
 
-
-  getLapPitStops(lap){
-    let stringPitStops = [];
+  getLapPitStops(lap) {
     let pitters = [];
-
     
-    //@ts-ignore
-    if(this.pitStopsInfo == undefined) {return}
-    if(this.pitStopsInfo[lap] != undefined){
-
-      this.pitStopsInfo[lap][0].forEach(x => {
-        pitters.push(({name: x.driverId.toUpperCase(), stop: x.stop, duration: x.duration}));  
+    if (this.pitStopsInfo == undefined) {
+      return null;
+    }
+    if (this.pitStopsInfo[lap] != undefined) {
+      this.pitStopsInfo[lap][0].forEach((x) => {
+        pitters.push({
+          name: x.driverId.toUpperCase(),
+          stop: x.stop,
+          duration: x.duration,
+        });
       });
       return pitters;
-      
-  }else{
-    return false;
-  }
-}
-
-
-getRaceRetirements(data:any[]){
-  
-  data.forEach(x=> {
-    if(x.laps == 0){
-      x.laps = 1 
+    } else {
+      return false;
     }
-  })
-
-  var retirementMotives = ["Retired","Accident"];
-
-  return data.filter(x=> retirementMotives.includes(x.status) || x.positionText == "R").map(x=> ({driver:x.Driver.driverId.toUpperCase(),retirementLap: x.laps,retirementMotive: x.status}) );
-}
-
-
-getLapRetirements(lap){
-
-  let retirements = [];
-  this.retirements.forEach(element => {
-    if(element.retirementLap == lap) retirements.push(element);
-  });
-
-  if(retirements.length == 0){
-
-    return false;
-  }else{
-    return retirements;
   }
-}
 
+  getRaceRetirements(data: any[]) {
+    data.forEach((x) => {
+      if (x.laps == 0) {
+        x.laps = 1;
+      }
+    });
 
-formatFinalResults(){
-  this.finalResultsObject = this.finalResults.map(x => (({name: x.Driver.driverId.toUpperCase(), textposition: x.position, position: x.position, finalTime: x.Time? x.Time.time :  x.status, gainedPositions: Number(x.grid) - Number(x.position)})))
-.sort((a,b) => Number(a.position) > Number(b.position) ? 1 : -1);
+    var retirementMotives = ['Retired', 'Accident'];
 
-  
-  var increment:any = [10 * this.finalResultsObject.length]
-  return this.finalResultsObject.map(x => (({name: x.name.toUpperCase(), value: increment = (increment-10)})));
-}
+    return data
+      .filter(
+        (x) => retirementMotives.includes(x.status) || x.positionText == 'R'
+      )
+      .map((x) => ({
+        driver: x.Driver.driverId.toUpperCase(),
+        retirementLap: x.laps,
+        retirementMotive: x.status,
+      }));
+  }
 
+  getLapRetirements(lap) {
+    let retirements = [];
+    this.retirements.forEach((element) => {
+      if (element.retirementLap == lap) retirements.push(element);
+    });
 
-getStartingGrid(data){
+    if (retirements.length == 0) {
+      return false;
+    } else {
+      return retirements;
+    }
+  }
 
-    let sorted = data.sort((a,b) => Number(a.grid) > Number(b.grid) ? 1 : -1);
+  formatFinalResults() {
+    this.finalResultsObject = this.finalResults
+      .map((x) => ({
+        name: x.Driver.driverId.toUpperCase(),
+        textposition: x.position,
+        position: x.position,
+        finalTime: x.Time ? x.Time.time : x.status,
+        gainedPositions: Number(x.grid) - Number(x.position),
+      }))
+      .sort((a, b) => (Number(a.position) > Number(b.position) ? 1 : -1));
+
+    var increment: any = [10 * this.finalResultsObject.length];
+    return this.finalResultsObject.map((x) => ({
+      name: x.name.toUpperCase(),
+      value: (increment = increment - 10),
+    }));
+  }
+
+  getStartingGrid(data) {
+    let sorted = data.sort((a, b) =>
+      Number(a.grid) > Number(b.grid) ? 1 : -1
+    );
     let temp = [];
     for (let i = 0; i < sorted.length; i++) {
       const driver = sorted[i];
       //API returns 0 when starting from the grid, we need to push them to the back to the array
-      if(driver.grid == 0){
-        let adjustedDriver = {...driver};
-        sorted.splice(i,1);
+      if (driver.grid == 0) {
+        let adjustedDriver = { ...driver };
+        sorted.splice(i, 1);
         adjustedDriver.grid = sorted.length;
-        temp.push(adjustedDriver)
+        temp.push(adjustedDriver);
         i--;
       }
     }
 
-    temp.forEach(x => {
+    temp.forEach((x) => {
       sorted.push(x);
     });
 
     let formated = [];
-    let fakeData = sorted.length * 10;  
+    let fakeData = sorted.length * 10;
 
     for (let i = 0; i < sorted.length; i++) {
       fakeData -= 10;
       const x = sorted[i];
-      formated.push({name:sorted[i].Driver.driverId.toUpperCase(),value:fakeData});
+      formated.push({
+        name: sorted[i].Driver.driverId.toUpperCase(),
+        value: fakeData,
+      });
     }
-    return formated;    
-}
-
-
+    return formated;
+  }
 }
 
 //TODO  hacer el grafico responsive o algo
-
-
-
