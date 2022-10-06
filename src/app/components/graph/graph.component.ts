@@ -51,6 +51,7 @@ export class GraphComponent implements OnInit {
   retirementsInfo: any;
   startingGrid: any;
   rounds$: any;
+  searched: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -94,7 +95,6 @@ export class GraphComponent implements OnInit {
     this.rounds$ = this.graphService
       .getEras(era) //@ts-ignore
       .pipe(map((x) => x.MRData.RaceTable.Races));
-    this.customColors = this.colorService.getTeamColors(era);
   }
 
   updateChartTimes(times, lap) {
@@ -111,6 +111,8 @@ export class GraphComponent implements OnInit {
   }
 
   getAndFormatLaps() {
+    this.searched = true;
+    this.customColors = this.colorService.getTeamColors(this.selectedEra);
     this.totalResults = [];
 
     this.resetRaceEvents();
@@ -328,7 +330,7 @@ export class GraphComponent implements OnInit {
 
   getLapPitStops(lap) {
     let pitters = [];
-    
+
     if (this.pitStopsInfo == undefined) {
       return null;
     }
@@ -432,5 +434,3 @@ export class GraphComponent implements OnInit {
     return formated;
   }
 }
-
-//TODO  hacer el grafico responsive o algo

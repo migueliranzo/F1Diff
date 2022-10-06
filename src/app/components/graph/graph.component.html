@@ -53,7 +53,7 @@
   <ng-template #empty>
     <div class="flex justify-center mt-[20%] text-white">
 
-      <div *ngIf="!positions && !lapTimes; else spinner" class="text-3xl">
+      <div *ngIf="!searched; else spinner" class="text-3xl">
         Use the dropdowns to select a year and a race!
       </div>
 
