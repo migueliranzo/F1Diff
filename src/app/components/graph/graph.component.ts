@@ -1,4 +1,4 @@
-import { Component, NgModule, OnInit } from '@angular/core';
+import { Component, ElementRef, NgModule, OnInit, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
@@ -13,8 +13,8 @@ import { GraphService } from '../services/graph.service';
   styleUrls: ['./graph.component.scss'],
 })
 export class GraphComponent implements OnInit {
+  @ViewChild("controls") myNameElem: ElementRef;
   playStatus: boolean = true;
-
   totalLaps;
   interval;
   selectedLap;
@@ -27,7 +27,7 @@ export class GraphComponent implements OnInit {
     2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
     2020, 2021,
   ];
-  view: [number, number] = [1200, 700];
+  view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 620];
 
   // options
   showXAxis: boolean = false;
@@ -45,7 +45,7 @@ export class GraphComponent implements OnInit {
   pitStopsInfo: any;
   pitStopInfo: any;
   finalResults: any[];
-  finalResultsObject: any;
+  finalResult: any;
   fastestLap: { driver: any; time: any; lap: any };
   retirements: any;
   retirementsInfo: any;
@@ -63,6 +63,15 @@ export class GraphComponent implements OnInit {
 
   customColors = [];
 
+  onResize(event) {
+    //@ts-ignore
+    if(window.innerWidth < 1200){
+      this.view = [window.innerWidth-60 , 620]
+    }else{
+      this.view = [event.target.innerWidth / 1.55, 620];
+    }
+}
+  
   onSelect(data: any): void {
     //console.log('Item clicked', JSON.parse(JSON.stringify(data)));
   }
@@ -106,7 +115,6 @@ export class GraphComponent implements OnInit {
   updateView(times, lap) {
     this.selectedLap = lap;
     this.single = times;
-
     Object.assign(this, this.single);
   }
 
@@ -141,12 +149,11 @@ export class GraphComponent implements OnInit {
             if (response == 'notFound') {
               return;
             }
-            this.finalResults = response;
             this.startingGrid = this.getStartingGrid(response);
             this.retirements = this.getRaceRetirements(response);
 
             this.msTimesToGraph();
-            this.totalResults.push(this.formatFinalResults());
+            this.totalResults.push(this.formatFinalResults(response));
             this.updateChartTimes(this.totalResults, this.selectedLap);
           });
 
@@ -218,7 +225,7 @@ export class GraphComponent implements OnInit {
   }
 
   resetRaceEvents() {
-    this.finalResultsObject = null;
+    this.finalResult = null;
     this.fastestLap = null;
     this.retirementsInfo = null;
     this.pitStopInfo = null;
@@ -381,8 +388,10 @@ export class GraphComponent implements OnInit {
     }
   }
 
-  formatFinalResults() {
-    this.finalResultsObject = this.finalResults
+  formatFinalResults(response) {
+    console.log(response);
+    
+    this.finalResult = response
       .map((x) => ({
         name: x.Driver.driverId.toUpperCase(),
         textposition: x.position,
@@ -392,8 +401,8 @@ export class GraphComponent implements OnInit {
       }))
       .sort((a, b) => (Number(a.position) > Number(b.position) ? 1 : -1));
 
-    var increment: any = [10 * this.finalResultsObject.length];
-    return this.finalResultsObject.map((x) => ({
+    var increment: any = [10 * this.finalResult.length];
+    return this.finalResult.map((x) => ({
       name: x.name.toUpperCase(),
       value: (increment = increment - 10),
     }));
