@@ -1,38 +1,40 @@
+<div #controls class="my-4 flex justify-evenly flex-wrap gap-y-5">
+  <div class="flex justify-start items-baseline">
+    <p-dropdown [options]="eras"   class="mx-2" [(ngModel)]="selectedEra" placeholder="Select a year" (onChange)="getYearEras(selectedEra)"></p-dropdown>
+    <p-dropdown [options]="(rounds$ | async)"   class="mx-2" [disabled]="selectedEra == undefined" [(ngModel)]="selectedRound" placeholder="Select a race" optionLabel="raceName" optionValue="round"></p-dropdown>
+    <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] disabled:bg-[#e76f519d] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" [disabled]="selectedRound == undefined" (click)="getAndFormatLaps()">Fetch results</button>
+  </div>
+
+ 
+
+  <div class="justify-end">
+    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0 || totalResults.length == 0" (click)="updateChartTimes(totalResults, 0)" >  <i class="pi pi-fast-backward" style="font-size: 1rem"> </i></button>
+
+    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0 || totalResults.length == 0" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
+    <div class="min-w-[165px] inline-block text-center">
+      <label *ngIf="selectedLap > totalLaps" class="mx-4 text-white text-2xl">Final Result</label>
+      <label *ngIf="selectedLap <= totalLaps && selectedLap !=0" class="mx-4 text-white text-2xl">Lap {{selectedLap}}</label>
+      <label *ngIf="selectedLap == 0" class="mx-4 text-white text-2xl">Starting grid</label>
+    </div>
+     <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
+    
+    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults,  totalLaps + 1)" > <i class="pi pi-fast-forward" style="font-size: 1rem"> </i></button>
+    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:ring-0 disabled:bg-[#e76f51ab]" [ngClass]="{'ring ring-red-300': !playStatus}" [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
+   
+  </div>
+</div>
 <div class="flex flex-row flex-wrap" >
 
-<div class="flex flex-col flex-1">
 
-  <div #controls class="my-4 flex justify-evenly flex-wrap gap-y-5">
-    <div class="flex justify-start items-baseline">
-      <p-dropdown [options]="eras"   class="mx-2" [(ngModel)]="selectedEra" placeholder="Select a year" (onChange)="getYearEras(selectedEra)"></p-dropdown>
-      <p-dropdown [options]="(rounds$ | async)"   class="mx-2" [disabled]="selectedEra == undefined" [(ngModel)]="selectedRound" placeholder="Select a race" optionLabel="raceName" optionValue="round"></p-dropdown>
-      <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] disabled:bg-[#e76f519d] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" [disabled]="selectedRound == undefined" (click)="getAndFormatLaps()">Fetch results</button>
-    </div>
+  <div class="flex flex-col flex-1">
 
-   
 
-    <div class="justify-end">
-      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0 || totalResults.length == 0" (click)="updateChartTimes(totalResults, 0)" >  <i class="pi pi-fast-backward" style="font-size: 1rem"> </i></button>
-  
-      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0 || totalResults.length == 0" (click)="updateChartTimes(totalResults, selectedLap - 1)" >  <i class="pi pi-step-backward" style="font-size: 1rem"> </i></button>
-      <div class="min-w-[165px] inline-block text-center">
-        <label *ngIf="selectedLap > totalLaps" class="mx-4 text-white text-2xl">Final Result</label>
-        <label *ngIf="selectedLap <= totalLaps && selectedLap !=0" class="mx-4 text-white text-2xl">Lap {{selectedLap}}</label>
-        <label *ngIf="selectedLap == 0" class="mx-4 text-white text-2xl">Starting grid</label>
-      </div>
-       <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
-      
-      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults,  totalLaps + 1)" > <i class="pi pi-fast-forward" style="font-size: 1rem"> </i></button>
-      <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:ring-0 disabled:bg-[#e76f51ab]" [ngClass]="{'ring ring-red-300': !playStatus}" [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
-     
-    </div>
-  </div>
   <!-- @ts-ignore -->
   <ngx-charts-bar-horizontal class="overflow-hidden" *ngIf="totalResults.length != 0; else empty"
   (window:resize)="onResize($event)"
   [view]="view" 
   [results]="single" 
-  [legend]="false"
+  [legend]="true"
   [gradient]="gradient"
   [customColors]="customColors"
   [xAxis]="showXAxis"
@@ -75,11 +77,12 @@
 
 </div>
   
-<div class="text-white min-h-[420px] min-w-[400px] flex-1" >
-  <p class="text-lg flex   my-3 justify-center">  Race events  </p>  
+<div class="mb-4 text-white min-h-[420px] min-w-[400px] flex-1 border-l border-b rounded-bl" >
   <div *ngIf="(selectedLap == totalLaps+1) && finalResult != null">
-    <p class="text-lg flex border-b border-white my-3 justify-center">🏁  Race results  🏁</p>  
-    <table class="m-auto table-fixed w-[100%]">
+    <div class=" pr-6 ">
+    <p class="text-lg flex border-b border-white mb-3 justify-center">🏁  Race results  🏁</p>  
+    </div>
+    <table class="m-auto resultTab table-fixed resultTab">
       <tbody>
         <tr>
           <th class="underline px-2 ">Driver</th> <th  class="px-2 underline">Position</th>  <th class="px-2 underline">Time</th> <th class="px-2 underline">Moves</th>
@@ -96,8 +99,10 @@
 
 
 
-<div *ngIf="pitStopInfo">
-  <p class="text-lg  flex border-b border-white my-3 justify-center">🧰  On the Pits  🧰</p>  
+<div class="mb-4" *ngIf="pitStopInfo">
+  <div class=" px-4">
+    <p class="text-lg  flex border-b border-white  mb-3 justify-center">🧰  On the Pits  🧰</p>  
+  </div>
     <table class="m-auto min-w-[40%]">
       <tbody>
         <tr>
@@ -111,8 +116,10 @@
 </div>
 
 
-<div class="mb-8" *ngIf="fastestLap && (fastestLap.lap == selectedLap || selectedLap == totalLaps+1)">
-  <p class="text-lg flex border-b border-white my-3 justify-center ">⏱   Fastest lap  ⏱ </p>  
+<div class="mb-4" *ngIf="fastestLap && (fastestLap.lap == selectedLap || selectedLap == totalLaps+1)">
+  <div class=" px-4">
+  <p class="text-lg flex border-b border-white mb-3 justify-center ">⏱   Fastest lap  ⏱ </p>  
+</div>
   <table  class="m-auto min-w-[40%]">
     <tbody>
       <tr>
@@ -124,8 +131,10 @@
   </table>
 </div>
 
-<div *ngIf="retirementsInfo">
-  <p class="text-lg flex border-b border-white my-3 justify-center">💥  Retirements  💥</p>  
+<div class="mb-4" *ngIf="retirementsInfo">
+  <div class=" px-4">
+  <p class="text-lg flex border-b border-white mb-3 justify-center">💥  Retirements  💥</p>  
+</div>
   <table  class="m-auto min-w-[40%]">
     <tbody>
       <tr>

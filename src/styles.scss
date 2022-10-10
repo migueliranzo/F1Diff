@@ -12,3 +12,15 @@
 .scene-tooltip{
     cursor: pointer;
 }
+
+.resultTab{
+    width: 100%;
+}
+
+@media only screen and (max-width: 1200px) {
+    /* For mobile phones: */
+    .resultTab{
+        min-width: 50%;
+        width: auto;
+    }
+  }

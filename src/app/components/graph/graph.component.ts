@@ -312,8 +312,8 @@ export class GraphComponent implements OnInit {
           this.selectedLap + 1
         );
 
-        this.pitStopInfo = this.getLapPitStops(this.selectedLap + 1);
-        this.retirementsInfo = this.getLapRetirements(this.selectedLap + 1);
+        this.pitStopInfo = this.getLapPitStops(this.selectedLap);
+        this.retirementsInfo = this.getLapRetirements(this.selectedLap);
       } else {
         this.playStatus = !this.playStatus;
         this.pauseTimesFromMap();
