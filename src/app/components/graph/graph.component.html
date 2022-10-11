@@ -35,7 +35,7 @@
   [view]="view" 
   [results]="single" 
   [legend]="true"
-  [gradient]="gradient"
+  [gradient]="false"
   [customColors]="customColors"
   [xAxis]="showXAxis"
   [yAxis]="showYAxis"
@@ -43,9 +43,6 @@
   [showYAxisLabel]="showYAxisLabel"
   [xAxisLabel]="xAxisLabel"
   [yAxisLabel]="yAxisLabel"
-  (select)="onSelect($event)"
-    (activate)="onActivate($event)"
-    (deactivate)="onDeactivate($event)"
     style="fill: #afb7c8;">
     
     <ng-template #tooltipTemplate let-model="model">

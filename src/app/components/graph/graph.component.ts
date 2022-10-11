@@ -25,19 +25,19 @@ export class GraphComponent implements OnInit {
   eras = [
     1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
     2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-    2020, 2021,
+    2020, 2021,2022
   ];
-  view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 650];
 
-  // options
+  //Graph settings
+  view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 650];
   showXAxis: boolean = false;
   showYAxis: boolean = true;
-  gradient: boolean = false;
-  showLegend: boolean = true;
   showXAxisLabel: boolean = true;
   yAxisLabel: string = 'Driver';
   showYAxisLabel: boolean = false;
   xAxisLabel: string = 'Time';
+  customColors = [];
+
   positions: any[];
   lapTimes: any[];
   totalResults: any[] = [];
@@ -61,7 +61,6 @@ export class GraphComponent implements OnInit {
     Object.assign(this, this.single);
   }
 
-  customColors = [];
 
   onResize(event) {
     //@ts-ignore
@@ -72,17 +71,7 @@ export class GraphComponent implements OnInit {
     }
 }
   
-  onSelect(data: any): void {
-    //console.log('Item clicked', JSON.parse(JSON.stringify(data)));
-  }
 
-  onActivate(data: any): void {
-    //console.log('Activate', JSON.parse(JSON.stringify(data)));
-  }
-
-  onDeactivate(data: any): void {
-    //console.log('Deactivate', JSON.parse(JSON.stringify(data)));
-  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params: ParamMap) => {
@@ -128,6 +117,11 @@ export class GraphComponent implements OnInit {
     this.graphService
       .getLapTimes(this.selectedEra, this.selectedRound)
       .subscribe((response) => {
+        
+        if (response == 'notFound') {
+          return;
+        }
+        
         let lapTimes = response;
         this.totalLaps = lapTimes.length;
         this.selectedLap = 0;

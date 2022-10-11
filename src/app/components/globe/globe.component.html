@@ -1,8 +1,8 @@
     <div class="font-mono text-white flex justify-center flex-col items-center relative gap-3"> 
-        <p class="lg:text-3xl text-2xl 2xl:text-4xl" >Revisit any race in just seconds!</p>
+        <p class="lg:text-3xl text-2xl 2xl:text-4xl" >Revisit any Formula 1 race in just seconds!</p>
         <div>
             <p-dropdown class="mx-2" [options]="eras" placeholder="Select a year" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
-            <p-dropdown  class="mx-2" [options]="races$ | async" [(ngModel)]="selectedRace" optionLabel="raceName" optionValue="round"></p-dropdown>
+            <p-dropdown  class="mx-2" [options]="races$ | async" placeholder="Select a year race" [disabled]="selectedEra == undefined" [(ngModel)]="selectedRace" optionLabel="raceName" optionValue="round"></p-dropdown>
             <button [disabled]="!selectedRace" (click)="dropDownToGraph()" class="mt-4 bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2]  rounded-full disabled:bg-[#e76f51ab]" ><i class="pi pi-arrow-right"></i>
             </button>
         </div>
