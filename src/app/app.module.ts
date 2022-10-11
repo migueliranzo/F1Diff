@@ -12,7 +12,7 @@ import { GraphComponent } from './components/graph/graph.component';
 import {FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import {AutoCompleteModule} from 'primeng/autocomplete';
+import {ToastModule} from 'primeng/toast';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,7 @@ import {AutoCompleteModule} from 'primeng/autocomplete';
     HttpClientModule,
     BrowserAnimationsModule,
     DropdownModule,
-    AutoCompleteModule,
+    ToastModule,
     NgxChartsModule,
     AppRoutingModule,
     SplitButtonModule,

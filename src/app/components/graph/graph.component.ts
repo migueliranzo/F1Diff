@@ -1,16 +1,14 @@
-import { Component, ElementRef, NgModule, OnInit, ViewChild } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { NgxChartsModule } from '@swimlane/ngx-charts';
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 import { TeamcolorsService } from '../services/teamcolors.service';
-import { Observable, throwError } from 'rxjs';
-import { catchError, first, map, min, retry } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 import { GraphService } from '../services/graph.service';
+import {MessageService} from 'primeng/api';
 @Component({
   selector: 'app-graph',
   templateUrl: './graph.component.html',
   styleUrls: ['./graph.component.scss'],
+  providers: [MessageService]
 })
 export class GraphComponent implements OnInit {
   @ViewChild("controls") myNameElem: ElementRef;
@@ -56,7 +54,8 @@ export class GraphComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private colorService: TeamcolorsService,
-    private graphService: GraphService
+    private graphService: GraphService,
+    private messageService : MessageService
   ) {
     Object.assign(this, this.single);
   }
@@ -71,9 +70,12 @@ export class GraphComponent implements OnInit {
     }
 }
   
-
+showToast(option:string, msg:string) {
+  this.messageService.add({severity:option, summary: option[0].toUpperCase() + option.substring(1), detail: msg});
+}
 
   ngOnInit(): void {
+
     this.route.paramMap.subscribe((params: ParamMap) => {
       if (params.get('era') == undefined) {
         return;
@@ -119,6 +121,8 @@ export class GraphComponent implements OnInit {
       .subscribe((response) => {
         
         if (response == 'notFound') {
+          this.searched = false;
+          this.showToast("error","No data for this race yet!");
           return;
         }
         
@@ -132,6 +136,7 @@ export class GraphComponent implements OnInit {
           .getPitStopts(this.selectedEra, this.selectedRound)
           .subscribe((response) => {
             if (response == 'notFound') {
+              this.showToast("info","No pit stop data for this race");
               return;
             }
             this.pitStopsInfo = this.orderPitStops(response, this.lapTimes);
@@ -141,6 +146,7 @@ export class GraphComponent implements OnInit {
           .getRaceResults(this.selectedEra, this.selectedRound)
           .subscribe((response) => {
             if (response == 'notFound') {
+              this.showToast("info","No retirements data for this race");
               return;
             }
             this.startingGrid = this.getStartingGrid(response);
@@ -155,6 +161,7 @@ export class GraphComponent implements OnInit {
           .getFastestLap(this.selectedEra, this.selectedRound)
           .subscribe((response) => {
             if (response == 'notFound') {
+              this.showToast("info","No fastest lap data for this race");
               return;
             }
             this.fastestLap = {
