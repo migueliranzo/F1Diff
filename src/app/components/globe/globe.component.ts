@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router"
+import { catchError, first, map, min, retry } from 'rxjs/operators';
+import { GraphService } from '../services/graph.service';
 @Component({
   selector: 'app-globe',
   templateUrl: './globe.component.html',
@@ -7,20 +9,27 @@ import {Router} from "@angular/router"
 })
 export class GlobeComponent implements OnInit {
 
+  
   circuitdata:any = null;
   word2: any;
   flip: any = 0;
   eras = [1996,1997 ,1998 ,1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021];
-  
+  selectedEra: any;
+  races$: any;
+  selectedRace: any;
+
   globeSeasons: any[] = null; 
-  constructor(private router: Router) { }
+  constructor(private router: Router, private graphService: GraphService) { }
 
   ngOnInit(): void {
-// @ts-ignore 
- //   const weightColor = d3.scaleSequentialSqrt(d3.interpolateYlOrRd)
-   // .domain([0, 1e7]);
-// @ts-ignore 
 
+    
+/*
+    window.addEventListener('resize', (event) => {// @ts-ignore 
+      this.word2.width([event.target.innerWidth])// @ts-ignore 
+      this.word2.height([event.target.innerHeight])
+    });
+*/
 var selectedEra = this.eras[Math.floor(Math.random()*this.eras.length)];
 
 
@@ -42,10 +51,7 @@ const tilesData = [];
   )
 );
 
-  function test(label: any){
-    console.log(label);
-    console.log("lool");
-  }
+  
   
   const getTooltip = d => `
   <div style="text-align: center; display:flex; background-color: rgb(0,0,0,0.3)">
@@ -137,7 +143,6 @@ const tilesData = [];
                     .labelDotRadius(0.0)// .labelDotRadius(0.4)
                     .labelColor(() => 'rgba(59, 241, 253, 0.75)')
                     .labelResolution(2)
-                    .onLabelClick(test) // @ts-ignore 
                     .atmosphereColor("cyan")
                     .atmosphereAltitude(".15")
 // @ts-ignore 
@@ -185,10 +190,11 @@ const tilesData = [];
                       )
                     
 
-                    // Add auto-rotation
+                    world.controls().maxPolarAngle = 2.5;
+                    world.controls().enableZoom = false;
                     world.controls().autoRotate = true;
                     world.controls().autoRotateSpeed = 0.3;  
-                    world.pointOfView({lat: 23, lng: 33, altitude: 2.7});
+                    world.pointOfView({lat: 23, lng: 33, altitude: 2});
                     this.word2 = world;
 
 
@@ -207,15 +213,24 @@ const tilesData = [];
   }
   arcToGraph(x: any) {
   let cont = {era: x.season, round: x.round}; 
-  console.log(cont);
   
   this.router.navigate(['/graph',cont])
   }
 
+  getYearEras(era) {
+    console.log("entra");
+    
+    this.races$ = this.graphService
+      .getEras(era) //@ts-ignore
+      .pipe(map((x) => x.MRData.RaceTable.Races));
+  }
 
+  dropDownToGraph(){
+    let cont = {era: this.selectedEra, round: this.selectedRace}; 
+    
+    this.router.navigate(['/graph',cont])
+  }
 
-  //Check if you can improve the globe astehtics, make it cooler like the github one -> the height of the border should be smaller probably, depends on final globe size
-  //Check Github globe as we are sheeking some same position/protagonism on our website, cool tailwind tags + the globe, the globe is decoration afterall
   //Clean weird season loop thats making a ton of API calls
 
   test2(clickedPlace:any){

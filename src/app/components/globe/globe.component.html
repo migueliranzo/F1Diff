@@ -1,24 +1,13 @@
-<div class="overflow-hidden">
-<p></p>
-    <div>
-        <div> 
-
-            <!-- 
-        <p-orderList [value]="circuitdata" (onSelectionChange)="test2($event.value)" filterBy="circuitName,Location.locality,Location.country" header="List of circuits" [listStyle]="{'max-height':'30rem'}">
-            <ng-template let-circuit  pTemplate="item">
-                <div >
-                    <div style="font-size:14px;margin:15px 5px 0 0">{{circuit.circuitName}} ({{circuit.Location.country}} , {{circuit.Location.locality}}) - {{circuit.timesraced}} times raced</div>
-                </div>
-            </ng-template>
-        </p-orderList></div>
-        -->
+    <div class="font-mono text-white flex justify-center flex-col items-center relative gap-3"> 
+        <p class="lg:text-3xl text-2xl 2xl:text-4xl" >Revisit any race in just seconds!</p>
         <div>
-            <div id="globeViz"></div>
+            <p-dropdown class="mx-2" [options]="eras" placeholder="Select a year" [(ngModel)]="selectedEra" (onChange)="getYearEras(selectedEra)"></p-dropdown>
+            <p-dropdown  class="mx-2" [options]="races$ | async" [(ngModel)]="selectedRace" optionLabel="raceName" optionValue="round"></p-dropdown>
+            <button [disabled]="!selectedRace" (click)="dropDownToGraph()" class="mt-4 bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2]  rounded-full disabled:bg-[#e76f51ab]" ><i class="pi pi-arrow-right"></i>
+            </button>
         </div>
-       
+        
     </div>
-   
-   
-    <div id="globeViz1"></div>
-    <div>ee</div>
-</div>
+    
+
+    <div id="globeViz"></div>

@@ -12,6 +12,7 @@ import { GraphComponent } from './components/graph/graph.component';
 import {FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
+import {AutoCompleteModule} from 'primeng/autocomplete';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     BrowserAnimationsModule,
     DropdownModule,
+    AutoCompleteModule,
     NgxChartsModule,
     AppRoutingModule,
     SplitButtonModule,

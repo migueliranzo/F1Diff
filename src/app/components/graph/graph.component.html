@@ -1,11 +1,11 @@
-<div #controls class="my-4 flex justify-evenly flex-wrap gap-y-5">
+<div #controls class="my-4 flex mb-12 justify-evenly flex-wrap gap-y-5">
   <div class="flex justify-start items-baseline">
     <p-dropdown [options]="eras"   class="mx-2" [(ngModel)]="selectedEra" placeholder="Select a year" (onChange)="getYearEras(selectedEra)"></p-dropdown>
     <p-dropdown [options]="(rounds$ | async)"   class="mx-2" [disabled]="selectedEra == undefined" [(ngModel)]="selectedRound" placeholder="Select a race" optionLabel="raceName" optionValue="round"></p-dropdown>
     <button class="bg-[#E76F51] mx-2 hover:shadow-lg active:bg-[#e76f51b0] disabled:bg-[#e76f519d] hover:bg-[#e76f51c2] text-white p-3 min-w-[47px] rounded-md" [disabled]="selectedRound == undefined" (click)="getAndFormatLaps()">Fetch results</button>
   </div>
 
- 
+
 
   <div class="justify-end">
     <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="selectedLap == 0 || totalResults.length == 0" (click)="updateChartTimes(totalResults, 0)" >  <i class="pi pi-fast-backward" style="font-size: 1rem"> </i></button>
@@ -16,11 +16,11 @@
       <label *ngIf="selectedLap <= totalLaps && selectedLap !=0" class="mx-4 text-white text-2xl">Lap {{selectedLap}}</label>
       <label *ngIf="selectedLap == 0" class="mx-4 text-white text-2xl">Starting grid</label>
     </div>
-     <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
+    <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]"  [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults, selectedLap + 1)"><i class="pi pi-step-forward" style="font-size: 1rem"> </i></button>
     
     <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px] hover:shadow-lg active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:bg-[#e76f51ab]" [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="updateChartTimes(totalResults,  totalLaps + 1)" > <i class="pi pi-fast-forward" style="font-size: 1rem"> </i></button>
     <button class="bg-[#E76F51] mx-2 text-white p-3 min-w-[47px]  hover:shadow-lg  active:bg-[#e76f51b0] hover:bg-[#e76f51c2] font-bold rounded-full disabled:ring-0 disabled:bg-[#e76f51ab]" [ngClass]="{'ring ring-red-300': !playStatus}" [disabled]="totalLaps+1 == selectedLap || totalResults.length == 0" (click)="playUpdateChartTimes()" (click)="flipy()" > <i [ngClass]="{'pi-play': playStatus, 'pi-pause': !playStatus}" class="pi" style="font-size: 1rem"> </i></button>
-   
+  
   </div>
 </div>
 <div class="flex flex-row flex-wrap" >
@@ -82,7 +82,7 @@
     <div class=" pr-6 ">
     <p class="text-lg flex border-b border-white mb-3 justify-center">🏁  Race results  🏁</p>  
     </div>
-    <table class="m-auto resultTab table-fixed resultTab">
+    <table class="m-auto mb-4 resultTab table-fixed resultTab">
       <tbody>
         <tr>
           <th class="underline px-2 ">Driver</th> <th  class="px-2 underline">Position</th>  <th class="px-2 underline">Time</th> <th class="px-2 underline">Moves</th>
@@ -103,7 +103,7 @@
   <div class=" px-4">
     <p class="text-lg  flex border-b border-white  mb-3 justify-center">🧰  On the Pits  🧰</p>  
   </div>
-    <table class="m-auto min-w-[40%]">
+    <table class="m-auto eventTab">
       <tbody>
         <tr>
           <th  class=" underline px-2" align="left">Driver</th> <th class=" underline px-2">Stop Nº</th> <th class=" underline px-2" >Stop time</th>
@@ -120,7 +120,7 @@
   <div class=" px-4">
   <p class="text-lg flex border-b border-white mb-3 justify-center ">⏱   Fastest lap  ⏱ </p>  
 </div>
-  <table  class="m-auto min-w-[40%]">
+  <table  class="m-auto eventTab">
     <tbody>
       <tr>
       </tr>
@@ -135,7 +135,7 @@
   <div class=" px-4">
   <p class="text-lg flex border-b border-white mb-3 justify-center">💥  Retirements  💥</p>  
 </div>
-  <table  class="m-auto min-w-[40%]">
+  <table  class="m-auto eventTab">
     <tbody>
       <tr>
         <th  class=" underline px-2" align="left">Driver</th> <th class=" underline px-2"> Reason</th>
@@ -149,4 +149,8 @@
 
 
 </div>
+</div>
+
+<div class="fixed top-0 left-0 p-1  text-white bg-[#E76F51] rounded-br-2xl hover:cursor-pointer" [routerLink]="['/globe']">
+  <i class="pi pi-globe"></i>
 </div>

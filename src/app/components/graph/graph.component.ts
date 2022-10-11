@@ -27,7 +27,7 @@ export class GraphComponent implements OnInit {
     2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
     2020, 2021,
   ];
-  view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 620];
+  view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 650];
 
   // options
   showXAxis: boolean = false;
@@ -66,9 +66,9 @@ export class GraphComponent implements OnInit {
   onResize(event) {
     //@ts-ignore
     if(window.innerWidth < 1200){
-      this.view = [window.innerWidth-60 , 620]
+      this.view = [window.innerWidth-60 , 650]
     }else{
-      this.view = [event.target.innerWidth / 1.55, 620];
+      this.view = [event.target.innerWidth / 1.55, 650];
     }
 }
   
