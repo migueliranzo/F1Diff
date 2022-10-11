@@ -136,6 +136,7 @@ showToast(option:string, msg:string) {
           .getPitStopts(this.selectedEra, this.selectedRound)
           .subscribe((response) => {
             if (response == 'notFound') {
+              this.pitStopsInfo = [];
               this.showToast("info","No pit stop data for this race");
               return;
             }
@@ -146,6 +147,8 @@ showToast(option:string, msg:string) {
           .getRaceResults(this.selectedEra, this.selectedRound)
           .subscribe((response) => {
             if (response == 'notFound') {
+              this.startingGrid = []
+              this.retirements = []
               this.showToast("info","No retirements data for this race");
               return;
             }
@@ -161,6 +164,7 @@ showToast(option:string, msg:string) {
           .getFastestLap(this.selectedEra, this.selectedRound)
           .subscribe((response) => {
             if (response == 'notFound') {
+              this.fastestLap = null;
               this.showToast("info","No fastest lap data for this race");
               return;
             }
