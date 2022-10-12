@@ -667,7 +667,7 @@ export class TeamcolorsService {
       {name: 'sainz', value: '#bf1414'},
       {name: 'alonso', value: '#024683'},
       {name: 'stroll', value: '#09887b'},
-      {name: 'zho', value: '#9b1b38'},
+      {name: 'zhou', value: '#9b1b38'},
       {name: 'tsunoda', value: '#2b4562'},
       {name: 'albon', value: '#fefefe'},
       {name: 'russell', value: '#c6c6c6'},

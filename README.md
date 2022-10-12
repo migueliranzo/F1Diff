@@ -8,7 +8,7 @@
 - [Acknowledgements](#acknowledgements)
 
 ## Overview
-![site img](https://raw.githubusercontent.com/migueliranzo/F1Diff/master/src/assets/imgofproyect.jpg.png)
+![site img](https://raw.githubusercontent.com/migueliranzo/F1Diff/master/src/assets/imgofproyect.jpg)
 
 
 Check the proyect live [here](https://migueliranzo.github.io/F1Diff/)!
@@ -35,5 +35,7 @@ I wanted to create a 3D globe that would be "F1 related" this was a big mistake 
 The other feature would be the race viewer, which is the main attraction of the website, while the globe is pretty much just for looks, the race viewer feature is really useful, as it lets you watch any race from the season 1996 onwards (API limitation) in a race chart like format, where the time gaps between the pilots in the race are translated into a visual chart, that makes figuring out the distances between pilots a much easier task. It also has a tab where race related events are shown, such as pitstops, fastest laps, retirements...
 
 ### Acknowledgements
-Especial thanks to [Eargast API](http://ergast.com/mrd/), the API where all the data needed for the comparissons comes from, couldn't have done it without it! 
+Especial thanks to [Eargast API](http://ergast.com/mrd/), the API where all the data needed for the comparissons comes from, couldn't have done it without it!
+
+
 [Linkedin](https://www.linkedin.com/in/miguel-iranzo-750b10110/)
