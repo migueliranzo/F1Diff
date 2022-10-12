@@ -36,7 +36,7 @@
               "node_modules/primeicons/primeicons.css",
               "src/styles.scss"
             ],
-            "scripts": ["src/app/components/globe/test.js"]
+            "scripts": []
           },
           "configurations": {
             "production": {
