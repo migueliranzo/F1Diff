@@ -49,8 +49,10 @@
     
     <ng-template #tooltipTemplate let-model="model">
       Dif
-      <pre>{{model.extra.dif}}</pre>
-    </ng-template> -->
+      <div *ngIf="model.extra != undefined" >
+        <pre>{{model.extra.dif}}</pre>
+      </div>
+    </ng-template>
     
   </ngx-charts-bar-horizontal>
 
@@ -63,7 +65,7 @@
 
       <ng-template #spinner>  
         <div class="flex items-center flex-col">
-          <img class="spinner" width="75" height="75" src="../../../assets/softPirelli.png" alt="loading icon">
+          <img class="spinner" width="75" height="75" src="./././assets/softPirelli.png" alt="loading icon">
           <span class="mt-2">  Loading...</span>
         </div>
       
@@ -124,7 +126,7 @@
       <tr>
       </tr>
       <tr class="text-[#bd71bd]"> 
-        <th class="px-5 ">{{fastestLap.driver}} </th> <th> {{fastestLap.time}}</th>
+        <th class="px-5" align="left">{{fastestLap.driver}} </th> <th> {{fastestLap.time}}</th>
       </tr>
     </tbody>
   </table>

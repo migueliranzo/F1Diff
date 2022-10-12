@@ -20,11 +20,7 @@ export class GraphComponent implements OnInit {
   selectedRound;
   single = [];
   rounds: any = [];
-  eras = [
-    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007,
-    2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019,
-    2020, 2021,2022
-  ];
+  eras: number [];
 
   //Graph settings
   view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 650];
@@ -75,7 +71,7 @@ showToast(option:string, msg:string) {
 }
 
   ngOnInit(): void {
-
+    this.eras = this.graphService.eras;
     this.route.paramMap.subscribe((params: ParamMap) => {
       if (params.get('era') == undefined) {
         return;
@@ -184,7 +180,6 @@ showToast(option:string, msg:string) {
       this.totalResults.push(cleanResults);
     }
     this.totalResults.unshift(this.startingGrid);
-    console.log(this.totalResults);
   }
 
   setPositionsAndGaps(lapTimes) {
@@ -394,7 +389,6 @@ showToast(option:string, msg:string) {
   }
 
   formatFinalResults(response) {
-    console.log(response);
     
     this.finalResult = response
       .map((x) => ({

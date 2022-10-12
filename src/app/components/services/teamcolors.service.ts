@@ -655,6 +655,28 @@ export class TeamcolorsService {
       {name: 'mazepin', value: '#fffcfd'},
       {name: 'vettel', value: '#09887b'},
       {name: 'perez', value: '#011c31'}
+    ],
+    '2022': [ 
+      {name: 'max_verstappen', value: '#011c31'},
+      {name: 'hamilton', value: '#c6c6c6'},
+      {name: 'bottas', value: '#9b1b38'}, 
+      {name: 'leclerc', value: '#bf1414'},
+      {name: 'gasly', value: '#2b4562'},
+      {name: 'ricciardo', value: '#fba92b'},
+      {name: 'norris', value: '#fba92b'},
+      {name: 'sainz', value: '#bf1414'},
+      {name: 'alonso', value: '#024683'},
+      {name: 'stroll', value: '#09887b'},
+      {name: 'zho', value: '#9b1b38'},
+      {name: 'tsunoda', value: '#2b4562'},
+      {name: 'albon', value: '#fefefe'},
+      {name: 'russell', value: '#c6c6c6'},
+      {name: 'ocon', value: '#024683'},
+      {name: 'latifi', value: '#fefefe'},
+      {name: 'mick_schumacher', value: '#fffcfd'},
+      {name: 'kevin_magnussen', value: '#fffcfd'},
+      {name: 'vettel', value: '#09887b'},
+      {name: 'perez', value: '#011c31'}
     ]
   };
   
