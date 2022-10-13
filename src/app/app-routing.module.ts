@@ -5,7 +5,8 @@ import { GraphComponent } from './components/graph/graph.component';
 
 const routes: Routes = [
   { path: '', component: GlobeComponent },
-  {path: 'graph', component: GraphComponent}
+  {path: 'graph', component: GraphComponent},
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
 
 @NgModule({
