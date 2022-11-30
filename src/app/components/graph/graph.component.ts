@@ -85,7 +85,6 @@ showToast(option:string, msg:string) {
     });
   }
 
-  flipy = () => (this.playStatus = !this.playStatus);
 
   getYearEras(era) {
     this.rounds$ = this.graphService
@@ -169,6 +168,9 @@ showToast(option:string, msg:string) {
               time: response.FastestLap.Time.time,
               lap: response.FastestLap.lap,
             };
+
+            this.playUpdateChartTimes();
+
           });
       });
   }
@@ -296,6 +298,8 @@ showToast(option:string, msg:string) {
     } else {
       this.pauseTimesFromMap();
     }
+    
+    this.playStatus = !this.playStatus;
   }
 
   pauseTimesFromMap() {
