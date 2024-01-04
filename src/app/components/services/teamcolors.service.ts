@@ -677,6 +677,30 @@ export class TeamcolorsService {
       {name: 'kevin_magnussen', value: '#fffcfd'},
       {name: 'vettel', value: '#09887b'},
       {name: 'perez', value: '#011c31'}
+    ],
+    '2023': [
+      {name: 'hamilton', value: '#00d2be'},
+      {name: 'russell', value: '#00d2be'},
+      {name: 'perez', value: '#011c31'},
+      {name: 'max_verstappen', value: '#011c31'},
+      {name: 'leclerc', value: '#dc0000'}, 
+      {name: 'sainz', value: '#dc0000'}, 
+      {name: 'nyck_de_vries', value: '#2b4562'}, 
+      {name: 'ricciardo', value: '#2b4562'}, 
+      {name: 'norris', value: '#ff8700'}, 
+      {name: 'piastri', value: '#ff8700'}, 
+      {name: 'alonso', value: '#006f62'}, 
+      {name: 'stroll', value: '#006f62'}, 
+      {name: 'bottas', value: '#900000'}, 
+      {name: 'zhou', value: '#900000'}, 
+      {name: 'magnussen', value: '#ffffff'},
+      {name: 'hulkenberg', value: '#ffffff'},
+      {name: 'albon', value: '#005aff'}, 
+      {name: 'sargeant', value: '#005aff'}, 
+      {name: 'tsunoda', value: '#2b4562'}, 
+      {name: 'de_vries', value: '#2b4562'}, 
+      {name: 'gasly', value: '#0090ff'},
+      {name: 'ocon', value: '#0090ff'}, 
     ]
   };
   

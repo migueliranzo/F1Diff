@@ -23,7 +23,7 @@ The biggest takeaway from this project would be how important it is to pick the 
 
 
 ### Built With
-The application was built using [Angular 13](https://angular.io/), I used [Tailwind](https://tailwindcss.com/) to style the site as I think its a really powerful tool that can save you a lot of time if you already have a strong CSS base, I used [ngx-charts](https://swimlane.gitbook.io/ngx-charts/) to create the dynamic race chart and [globe.gl](https://globe.gl/) for the landing page 3D earth globe (which took way too much time!)
+The application was built using [Angular](https://angular.io/), I used [Tailwind](https://tailwindcss.com/) to style the site as I think its a really powerful tool that can save you a lot of time if you already have a strong CSS base, I used [ngx-charts](https://swimlane.gitbook.io/ngx-charts/) to create the dynamic race chart and [globe.gl](https://globe.gl/) for the landing page 3D earth globe (which took way too much time!)
 
 ## Features
 

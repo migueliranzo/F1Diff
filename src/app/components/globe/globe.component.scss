@@ -1,0 +1,40 @@
+.congrats-Max {
+    position: absolute;
+    top: 118px;
+    right: -33px;
+    background-color: #e74c3c;
+    padding: 5px 40px;
+    /* Adjust width of the congrats-Max */
+    /* Rotate the div */
+    transform: rotate(45deg);
+    transform-origin: top right;
+    /* Center the text */
+    text-align: center;
+    color: white;
+    /* For better text positioning */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.congrats-Max:before,
+.congrats-Max:after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    border-style: solid;
+}
+
+.congrats-Max:before {
+    right: 0;
+    border-width: 10px 0 0 10px;
+    /* Adjust size of the tails */
+    border-color: #c0392b transparent transparent transparent;
+}
+
+.congrats-Max:after {
+    left: 0;
+    border-width: 10px 10px 0 0;
+    /* Adjust size of the tails */
+    border-color: transparent #c0392b transparent transparent;
+}

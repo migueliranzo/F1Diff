@@ -90,7 +90,7 @@ var randomEra = this.eras[Math.floor(Math.random()*this.eras.length)];
 
           //Globe arcs
           .arcsData(this.arcRaces)
-          .arcColor(d => [`rgba(223, 85, 51, 1)`, `rgba(223, 85, 51, 1)`])
+          .arcColor(d => [`rgba(255,24, 1, 1)`, `rgba(255, 24, 1, 1)`])
           .arcDashLength(0.4)
           .arcDashGap(4)
           .arcLabel((d) => `<div style="background-color: rgba(0, 0, 0, 0.4);
@@ -104,7 +104,7 @@ var randomEra = this.eras[Math.floor(Math.random()*this.eras.length)];
           .onArcHover(hoverArc => world
           .arcColor(d => {
               const op = !hoverArc ? 0.9 : d === hoverArc ? 0.9 : 0.9 / 4;
-              return [`rgba(223, 85, 51, ${op})`, `rgba(223, 85, 51, ${op})`];
+              return [`rgba(255, 24, 1, ${op})`, `rgba(255, 24, 1, ${op})`];
             }).arcDashGap(Number(!hoverArc) * 4)
             .controls().autoRotate = !hoverArc
           

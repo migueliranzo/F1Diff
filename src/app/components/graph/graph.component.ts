@@ -21,6 +21,7 @@ export class GraphComponent implements OnInit {
   single = [];
   rounds: any = [];
   eras: number [];
+  graphVisibility: boolean = false;
 
   //Graph settings
   view: [number, number] = [window.innerWidth > 1200 ? window.innerWidth/1.55 : window.innerWidth - 60, 650];

@@ -2,7 +2,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@font-face {
+    font-family: 'f1'; 
+    src: url('assets/Formula1-Regular-1.ttf') format('truetype'); 
+    font-weight: normal; 
+    font-style: normal; 
+}
+@font-face {
+    font-family: 'f1'; 
+    src: url('assets/Formula1-Bold-4.ttf') format('truetype'); 
+    font-weight: bold; 
+    font-style: normal; 
+}
 
+body{
+    font-family: 'f1', sans-serif !important;
+    .p-component,.p-inputtext {
+        font-family: 'f1', sans-serif !important;
+    }
+}
+
+html{
+    overflow-x: hidden;
+}
 
 .chart-legend .legend-label .active .legend-label-text, .legend-title-text{
 
